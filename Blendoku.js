@@ -33,17 +33,25 @@ function startGame(gameData) {
 function generateBoard(rows, cols, fixedIndices = [], colorOrder = []) {
   const board = document.getElementById('board');
   board.innerHTML = '';
-  board.style.gridTemplateColumns = `repeat(${cols}, 60px)`;
+
+  // 設定最大寬度為 600px
+  const maxWidth = 536;
+  const cellSize = Math.floor(maxWidth / 7); // 每格寬度
+  board.style.width = `${cellSize * cols}px`;
+  board.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
 
   for (let i = 0; i < rows * cols; i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
-    cell.dataset.answer = i.toString(); // 正確位置 = index
+    cell.style.width = `${cellSize}px`;
+    cell.style.height = `${cellSize}px`;
+
+    cell.dataset.answer = i.toString();
+
     if (fixedIndices.includes(i)) {
       cell.dataset.fixed = 'true';
       cell.classList.add('fixed');
 
-      // 自動放入提示色塊（正確顏色）
       const tile = createTile(i, colorOrder[i], true);
       cell.appendChild(tile);
       cell.dataset.current = i.toString();
