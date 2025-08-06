@@ -3,7 +3,7 @@
 const gameData = {
   rows: 3,
   cols: 3,
-  fixedIndices: [0, 2, 5], // 哪些格子是提示格
+  fixedIndices: [0, 2, 5, 6], // 哪些格子是提示格
   colorOrder: [
     '#0c6b00', '#067354', '#007ba7',
     '#86a927', '#7eb27d', '#76bad3',
