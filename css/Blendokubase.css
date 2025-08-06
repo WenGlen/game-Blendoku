@@ -147,6 +147,10 @@ html, body {
   height: 4vh;
   margin: 2vh;
 }
+.header .logo img {
+  width: 100%;
+  height: auto;
+}
 .header .levelNum {
   font-size: 4vh;
   font-weight: bold;
