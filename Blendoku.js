@@ -123,56 +123,85 @@ function createTile(index, color, isFixed = false) {
 
 // 負責設定拖曳邏輯的函數
 function setupDragAndDrop() {
-    const tiles = document.querySelectorAll('.tile'); // 所有色塊
-    const cells = document.querySelectorAll('.cell'); // 所有格子（含題目格與初始格）
+  const tiles = document.querySelectorAll('.tile');
+  const cells = document.querySelectorAll('.cell');
+  let selectedTile = null;
 
-    //開始拖曳
-    tiles.forEach(tile => {
-        tile.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', tile.dataset.index);
-        });
+  // === 拖曳邏輯（桌機） ===
+  tiles.forEach(tile => {
+    tile.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', tile.dataset.index);
     });
 
-    //釋放拖曳
-    cells.forEach(cell => {
-        cell.addEventListener('dragover', (e) => e.preventDefault());
-
-        //根據釋放位置是否有色塊判斷要交換或不執行動作
-        cell.addEventListener('drop', (e) => {
-        e.preventDefault();
-
-        const tileIndex = e.dataTransfer.getData('text/plain');
-        const draggedTile = document.querySelector(`.tile[data-index="${tileIndex}"]`);
-        const currentTileInCell = cell.querySelector('.tile');
-        const originalParent = draggedTile.parentElement;
-
-        // 固定提示格上不允許拖放
-        if (cell.dataset.fixed === 'true') return;
-
-        // 如果目標格已有其他 tile，就交換
-        if (currentTileInCell) {
-            originalParent.appendChild(currentTileInCell);
-            if (originalParent.classList.contains('cell')) {
-            originalParent.dataset.current = currentTileInCell.dataset.index;
-            } else {
-            delete originalParent.dataset.current;
-            }
-        } else {
-            // 沒有交換，就清空原格的 current
-            if (originalParent.classList.contains('cell')) {
-            delete originalParent.dataset.current;
-            }
-        }
-
-        // 將拖曳進來的 tile 放到新的 cell 中
-        cell.innerHTML = '';
-        cell.appendChild(draggedTile);
-        cell.dataset.current = tileIndex;
-
-        setTimeout(checkAnswer, 50); // 延遲以確保畫面已更新
-        });
+    // 新增點擊邏輯（手機/桌機共用）
+    tile.addEventListener('click', (e) => {
+      // 點已選中的 tile → 取消選取
+      if (selectedTile === tile) {
+        tile.classList.remove('selected');
+        selectedTile = null;
+      } else {
+        // 移除其他選取
+        document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
+        tile.classList.add('selected');
+        selectedTile = tile;
+      }
     });
+  });
+
+  cells.forEach(cell => {
+    cell.addEventListener('dragover', (e) => e.preventDefault());
+
+    cell.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const tileIndex = e.dataTransfer.getData('text/plain');
+      const draggedTile = document.querySelector(`.tile[data-index="${tileIndex}"]`);
+      moveTileToCell(draggedTile, cell);
+    });
+
+    // 點擊格子：執行選中 tile → 移入該格
+    cell.addEventListener('click', () => {
+      if (!selectedTile) return;
+      moveTileToCell(selectedTile, cell);
+      selectedTile.classList.remove('selected');
+      selectedTile = null;
+    });
+  });
 }
+
+
+
+
+
+// 手指點擊
+function moveTileToCell(draggedTile, cell) {
+  if (cell.dataset.fixed === 'true') return;
+
+  const currentTileInCell = cell.querySelector('.tile');
+  const originalParent = draggedTile.parentElement;
+
+  if (currentTileInCell) {
+    originalParent.appendChild(currentTileInCell);
+    if (originalParent.classList.contains('cell')) {
+      originalParent.dataset.current = currentTileInCell.dataset.index;
+    } else {
+      delete originalParent.dataset.current;
+    }
+  } else {
+    if (originalParent.classList.contains('cell')) {
+      delete originalParent.dataset.current;
+    }
+  }
+
+  cell.innerHTML = '';
+  cell.appendChild(draggedTile);
+  cell.dataset.current = draggedTile.dataset.index;
+
+  setTimeout(checkAnswer, 50);
+}
+
+
+
+
 
 
 // 檢查是否所有格子都擺對的函數

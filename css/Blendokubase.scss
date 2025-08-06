@@ -130,7 +130,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 60px); // 依據你的 rows/cols 調整
   justify-content: center;                // ✅ 水平置中 grid 區塊
-  gap: 10px;
+  //gap: 10px;
   margin: 20px auto;
   
 
@@ -189,8 +189,13 @@ body {
   cursor: grab;
   border: 2px solid transparent;
   border-radius: 8px;
-
+  &.selected {
+    outline: 3px solid #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+  }
 }
+
+
 
 .gapline {
   height: 1px;
