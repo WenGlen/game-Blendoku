@@ -88,20 +88,17 @@
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
-  --radius: 16px;
+  --radius: 8px;
   --button-spacing: 8px;
   --button-radius: 8px;
-  --grid-size:70px;
+  --grid-size:60px;
   --grid-radius:8px;
   /* ================ text ================ */
   --font-size-h1: 36px;
-  --font-size-h2: 28px;
-  --font-size-h3: 24px;
-  --font-size-h4: 20px;
-  --font-size-h5: 16px;
-  --font-size-h6: 14px;
-  --font-size-body: 16px;
-  --font-size-small: 13px;
+  --font-size-h2: 20px;
+  --font-size-h3: 14px;
+  --font-size-body: 12px;
+  --font-size-small: 12px;
   /* ================ RWD ================ */
   --breakpoint-sm: 600px;
   --breakpoint-md: 1024px;
@@ -109,7 +106,90 @@
   --font-size-body-rwd: 12px;
 }
 
-/* ================ UI ================ */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  background: var(--color-gray90);
+}
+
+.wrap {
+  border: 1px solid var(--color-temp);
+  max-width: 50vh;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 2vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  box-sizing: border-box;
+  width: 100%;
+  height: 8vh;
+  margin: 0 auto;
+  margin-bottom: 2vh;
+  background: var(--color-gray80);
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.header .logo {
+  width: 4vh;
+  height: 4vh;
+  margin: 2vh;
+}
+.header .levelNum {
+  font-size: 4vh;
+  font-weight: bold;
+  line-height: 1.5;
+  color: var(--color-gray20);
+  text-align: center;
+}
+.header .menu {
+  color: var(--color-gray40);
+  width: 4vh;
+  height: 4vh;
+  margin: 2vh;
+}
+
+.panel {
+  box-sizing: border-box;
+  width: 100%;
+  flex-grow: 1;
+  margin: 0 auto;
+  padding: 4vh;
+  background: var(--color-gray80);
+  border-radius: var(--radius);
+}
+
+.instruction {
+  margin-top: 2vh;
+  border-radius: 8px;
+  line-height: 1.5;
+  color: var(--color-gray20);
+}
+.instruction h3 {
+  font-size: var(--font-size-h3);
+  margin-top: 0;
+}
+.instruction ul {
+  font-size: var(--font-size-body);
+  padding-left: calc(2 * var(--font-size-body));
+}
+.instruction ul li {
+  list-style: disc;
+}
+
+/* ================ panel UI ================ */
 .board {
   display: grid;
   justify-content: center;
@@ -154,8 +234,7 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 20px auto;
-  gap: 10px;
+  margin: 0 auto;
 }
 
 .tile {
@@ -171,88 +250,7 @@
 }
 
 .gapline {
-  height: 1px;
-  background: var(--color-gray10);
-  margin: 32px 0;
-}
-
-.body {
-  background: var(--color-gray90);
-  padding: 2vh;
-}
-
-.wrap {
-  max-width: 600px;
-  height: 96vh;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  box-sizing: border-box;
-  width: 100%;
-  height: 8vh;
-  margin: 0 auto;
-  margin-bottom: 2vh;
-  background: var(--color-gray80);
-  border-radius: var(--radius);
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.header .logo {
-  border: 1px solid var(--color-temp);
-  color: #BFCEE6;
-  width: 4vh;
-  height: 4vh;
-  margin: 2vh;
-}
-.header .levelNum {
-  font-size: 48px;
-  font-weight: bold;
-  line-height: 1.5;
-  color: var(--color-gray20);
-  text-align: center;
-}
-.header .menu {
-  border: 1px solid var(--color-temp);
-  width: 4vh;
-  height: 4vh;
-  margin: 2vh;
-}
-
-.panel {
-  box-sizing: border-box;
-  width: 100%;
-  flex-grow: 1;
-  margin: 0 auto;
-  padding: 32px;
-  background: var(--color-gray80);
-  border-radius: var(--radius);
-}
-
-.instruction {
-  border: 1px solid var(--color-gray70);
-  padding: 16px;
-  margin-bottom: 24px;
-  border-radius: 8px;
-  line-height: 1.5;
-  color: var(--color-gray30);
-}
-.instructionh3 {
-  font-size: 12pt;
-  margin-top: 0;
-}
-.instructionp {
-  font-size: 10pt;
-}
-.instructionul {
-  padding-left: 20px;
-}
-.instructionulli {
-  list-style: disc;
+  height: 2vh;
 }
 
 .footer {

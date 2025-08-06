@@ -3,11 +3,11 @@
 const gameData = {
   rows: 3,
   cols: 3,
-  fixedIndices: [0, 5], // 哪些格子是提示格
+  fixedIndices: [0, 2, 5], // 哪些格子是提示格
   colorOrder: [
-    '#ffeecc', '#ffdd99', '#ffcc66',
-    '#ffbb33', '#ffaa00', '#ee9900',
-    '#dd8800', '#cc7700', '#bb6600'
+    '#0c6b00', '#067354', '#007ba7',
+    '#86a927', '#7eb27d', '#76bad3',
+    '#ffe14d', '#f5f0a6', '#ebf9ff'
   ] // index 為正確答案順序（由左到右上到下）
 };
 
@@ -36,7 +36,8 @@ function generateBoard(rows, cols, fixedIndices = [], colorOrder = []) {
 
   // 設定最大寬度為 600px
   const maxWidth = 536;
-  const cellSize = Math.floor(maxWidth / 7); // 每格寬度
+  //const cellSize = Math.floor(maxWidth / 7); // 每格寬度
+  const cellSize = 60; // 每格寬度
   board.style.width = `${cellSize * cols}px`;
   board.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
 
