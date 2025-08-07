@@ -178,12 +178,16 @@ html, body {
     line-height: 1.5;
     color: var(--color-gray20);
     text-align: center;
+    font-family: monospace;
   }
 
-	.menu{ color: var(--color-gray40);//border: 1px solid var(--color-temp);
+	.ver{ color: var(--color-gray40);//border: 1px solid var(--color-temp);
 	  width: 4vh;
 		height: 4vh;
     margin: 2vh;
+    display: flex;
+    text-align: center;
+    align-items: center;
 	}
   
 }

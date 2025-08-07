@@ -1,29 +1,77 @@
 // ====== 遊戲設定參數 ======
-const gameData = {
-  rows: 1,
-  cols: 3,
-  fixedIndices: [0], // 哪些格子是提示格
-  colorOrder: [
-    '#0c6b00',
-    '#86a927',
-    '#ffe14d', 
-  ] // index 為正確答案順序（由左到右上到下）
-};
+const gameLevels = [
+  {
+    rows: 1,
+    cols: 3,
+    fixedIndices: [0],
+    colorOrder: ['#0c6b00', '#86a927', '#ffe14d']
+  },
+  {
+    rows: 3,
+    cols: 3,
+    fixedIndices: [0],
+    colorOrder: [
+      '#ff6a1a', '#ffac22', '#ffed29',
+      'X', '#b6a917', 'X',
+      'X', '#23a300', 'X'
+    ]
+  },
+  {
+    rows: 4,
+    cols: 3,
+    fixedIndices: [0, 2, 11], // 哪些格子是提示格
+    colorOrder: [
+      '#ffffff', 'X', '#4ee9fd',
+      '#ffedaa', '#c6e1ba', '#55c8d9',
+      '#ffda55', 'X', '#5ca8b6',
+      '#ffc800', 'X', '#638792'
+    ]
+  },
+  {
+    rows: 3,
+    cols: 3,
+    fixedIndices: [0, 2, 5], // 哪些格子是提示格
+    colorOrder: [
+      '#0c6b00', '#067354', '#007ba7',
+      '#86a927', 'X', '#76bad3',
+      '#ffe14d', '#f5f0a6', '#ebf9ff'
+    ]
+  }
+];
 
-// ====== 計分功能 =====
+// ====== 設定計分功能參數 =====
 
 let stepCount = 0;
 let startTime = null;
 let timerInterval = null;
 let hasStarted = false;
 let timeElapsed = 0;
-
+let currentLevel = 0;
 
 // ====== 等整個頁面載入後再開始 ======
 document.addEventListener('DOMContentLoaded', () => {
-  startGame(gameData);
+  loadLevel(currentLevel);
   document.getElementById('win-popup').classList.add('hidden'); // 確保彈窗一開始是隱藏的
 });
+
+function loadLevel(index) {
+  const levelData = gameLevels[index];
+  if (!levelData) return;
+
+  // ✅ 更新 header 顯示的關卡編號
+  document.querySelector('.levelNum').textContent = `Lv ${index + 1}`;
+
+  // 以下保持原本內容
+  stepCount = 0;
+  hasStarted = false;
+  clearInterval(timerInterval);
+  document.getElementById('step-count').textContent = '0';
+  document.getElementById('timer').textContent = '0.0';
+  document.getElementById('win-popup').classList.add('hidden');
+
+  startGame(levelData);
+}
+
 
 // ====== 主流程函式 ======
 function startGame({ rows, cols, fixedIndices, colorOrder }) {
@@ -247,7 +295,9 @@ function checkAnswer() {
   if (correct) {
     showPopup(); // 顯示彈窗
     stopTimer?.(); // 如果有定時器函式
+  }
 }
+
 
 // === 顯示 / 關閉彈窗 ===
 
@@ -281,6 +331,16 @@ function restartGame() {
 
   // 重新啟動遊戲（你可以指定同一個題目或重新產生）
   startGame(gameData); // 或 setupPuzzle(...)，看你目前使用哪種
+}
+
+ // 進下一關
+function nextLevel() {
+  currentLevel++;
+  if (currentLevel >= gameLevels.length) {
+    alert("你已完成所有關卡！");
+    return;
+  }
+  loadLevel(currentLevel);
 }
 
 // === 工具函式 ===

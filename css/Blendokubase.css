@@ -150,12 +150,16 @@ html, body {
   line-height: 1.5;
   color: var(--color-gray20);
   text-align: center;
+  font-family: monospace;
 }
-.header .menu {
+.header .ver {
   color: var(--color-gray40);
   width: 4vh;
   height: 4vh;
   margin: 2vh;
+  display: flex;
+  text-align: center;
+  align-items: center;
 }
 
 .panel {
