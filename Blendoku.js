@@ -1,14 +1,22 @@
 // ====== 遊戲設定參數 ======
 const gameData = {
-  rows: 3,
+  rows: 1,
   cols: 3,
-  fixedIndices: [0, 2, 5, 6], // 哪些格子是提示格
+  fixedIndices: [0], // 哪些格子是提示格
   colorOrder: [
-    '#ffffff', 'X', '#3382d7',
-    '#fde280', '#a7ad91', '#5178a3',
-    '#fac400', 'X', '#6e6e6e'
+    '#0c6b00',
+    '#86a927',
+    '#ffe14d', 
   ] // index 為正確答案順序（由左到右上到下）
 };
+
+// ====== 計分功能 =====
+
+let stepCount = 0;
+let startTime = null;
+let timerInterval = null;
+let hasStarted = false;
+let timeElapsed = 0;
 
 
 // ====== 等整個頁面載入後再開始 ======
@@ -108,20 +116,16 @@ function createTile(index, color, isFixed = false) {
   return tile;
 }
 
-// ====== 計分功能 =====
 
-let stepCount = 0;
-let startTime = null;
-let timerInterval = null;
-let hasStarted = false;
 
 
 // 開始記錄時間
 function startTimer() {
   startTime = Date.now();
   timerInterval = setInterval(() => {
-    const elapsed = (Date.now() - startTime) / 1000; // 變成秒（浮點數）
-    const formatted = elapsed.toFixed(1); // 小數點後一位
+    const elapsed = (Date.now() - startTime) / 1000; // 秒數
+    timeElapsed = elapsed; // ✅ 把最新秒數存進全域變數
+    const formatted = elapsed.toFixed(1);
     document.getElementById('timer').textContent = formatted;
   }, 100);
 }
@@ -243,7 +247,6 @@ function checkAnswer() {
   if (correct) {
     showPopup(); // 顯示彈窗
     stopTimer?.(); // 如果有定時器函式
-  }
 }
 
 // === 顯示 / 關閉彈窗 ===
