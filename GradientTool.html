@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gradient + Manual Color Tool</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+
+    /* 漸層工具 */
+    .gradient-section {
+      margin-bottom: 40px;
+    }
+
+    .gradient-grids {
+      display: flex;
+      gap: 40px;
+      margin-top: 10px;
+    }
+
+    .grid-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .grid {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: transparent;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .cell:hover::after {
+      content: attr(data-color);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* 自訂輸入工具 */
+    .manual-section {
+      display: flex;
+      gap: 40px;
+      margin-top: 20px;
+    }
+
+    .grid-display {
+      display: grid;
+      grid-template-columns: repeat(5, 40px);
+      grid-template-rows: repeat(5, 40px);
+      gap: 4px;
+    }
+
+    .grid-input {
+      display: grid;
+      grid-template-columns: repeat(5, 80px);
+      grid-template-rows: repeat(5, 40px);
+      gap: 4px;
+    }
+
+
+
+
+    .input-cell {
+      width: 80px;
+      height: 40px;
+      box-sizing: border-box;
+      padding: 4px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    h2 {
+      margin: 20px 0;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 漸層工具 -->
+  <div class="gradient-section">
+    <h2>格狀漸層產生器</h2>
+    <div class="controls">
+      <label>Top Left <input type="color" id="tl" value="#ffffff" /></label>
+      <label>Top Right <input type="color" id="tr" value="#2de1e1" /></label>
+      <label>Bottom Left <input type="color" id="bl" value="#ffdd00" /></label>
+      <label>Bottom Right <input type="color" id="br" value="#677183" /></label>
+      <button onclick="renderAllGrids()">Generate</button>
+    </div>
+    <div class="gradient-grids" id="gradientGrids"></div>
+  </div>
+
+  <!-- 線性漸層小工具 -->
+  <div style="margin-top: 60px;">
+    <h2>線性漸層產生器</h2>
+    <label>Start Color <input type="text" id="linearStart" value="#ffffff" placeholder="#rrggbb" /></label>
+    <label>End Color <input type="text" id="linearEnd" value="#2de1e1" placeholder="#rrggbb" /></label>
+  </div>
+
+  <div id="linearStrips" style="margin-top: 20px; display: flex; flex-direction: row; gap: 40px;"></div>
+
+
+  <!-- 自訂輸入工具 -->
+  <div class="manual-section">
+    <div class="section">
+      <h2>漸層測試區</h2>
+      <div class="grid-display" id="displayGrid"></div>
+      <button onclick="copyColors()">📋 複製 HEX 陣列</button>
+    </div>
+    <div class="section">
+      <h2>　</h2>
+      <div class="grid-input" id="inputGrid"></div>
+    </div>
+  </div>
+
+
+
+  <script>
+    // 共用 function
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+
+    function rgbToHex({ r, g, b }) {
+      return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join("");
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function lerpColor(c1, c2, t) {
+      return {
+        r: Math.round(lerp(c1.r, c2.r, t)),
+        g: Math.round(lerp(c1.g, c2.g, t)),
+        b: Math.round(lerp(c1.b, c2.b, t))
+      };
+    }
+
+    function generateGridColors(rows, cols, tl, tr, bl, br) {
+      const colors = [];
+      for (let y = 0; y < rows; y++) {
+        const ty = y / (rows - 1);
+        for (let x = 0; x < cols; x++) {
+          const tx = x / (cols - 1);
+          const top = lerpColor(tl, tr, tx);
+          const bottom = lerpColor(bl, br, tx);
+          const final = lerpColor(top, bottom, ty);
+          colors.push(rgbToHex(final));
+        }
+      }
+      return colors;
+    }
+
+    function renderGrid(colors, rows, cols) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "grid-wrapper";
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      grid.style.gridTemplateColumns = `repeat(${cols}, 40px)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, 40px)`;
+
+      colors.forEach(hex => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.style.backgroundColor = hex;
+        cell.dataset.color = hex;
+
+        cell.addEventListener("click", () => {
+          navigator.clipboard.writeText(hex);
+        });
+
+        grid.appendChild(cell);
+      });
+
+      const button = document.createElement("button");
+      button.textContent = `複製 ${rows}x${cols}`;
+      button.addEventListener("click", () => {
+        const formatted = `colorOrder: [\n  ` +
+          colors.map((c, i) => `'${c}'${(i + 1) % cols === 0 ? ',\n  ' : ', '}`).join('')
+            .trim().replace(/,\s*$/, '') + '\n]';
+        navigator.clipboard.writeText(formatted);
+        button.textContent = "✅ 已複製！";
+        setTimeout(() => button.textContent = `複製 ${rows}x${cols}`, 1500);
+      });
+
+      wrapper.appendChild(grid);
+      wrapper.appendChild(button);
+
+      return wrapper;
+    }
+
+    function renderAllGrids() {
+      const tl = hexToRgb(document.getElementById("tl").value);
+      const tr = hexToRgb(document.getElementById("tr").value);
+      const bl = hexToRgb(document.getElementById("bl").value);
+      const br = hexToRgb(document.getElementById("br").value);
+
+      const container = document.getElementById("gradientGrids");
+      container.innerHTML = "";
+
+      [[5, 5], [4, 4], [3, 3]].forEach(([rows, cols]) => {
+        const colors = generateGridColors(rows, cols, tl, tr, bl, br);
+        container.appendChild(renderGrid(colors, rows, cols));
+      });
+    }
+
+    // 手動輸入工具邏輯
+    const displayGrid = document.getElementById("displayGrid");
+    const inputGrid = document.getElementById("inputGrid");
+    const rows = 5;
+    const cols = 5;
+    const displayCells = [];
+    const inputCells = [];
+
+    for (let i = 0; i < rows * cols; i++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      displayGrid.appendChild(cell);
+      displayCells.push(cell);
+
+      const input = document.createElement("input");
+      input.className = "input-cell";
+      input.placeholder = "#ffffff";
+
+      input.addEventListener("input", () => {
+        const val = input.value.trim();
+        if (val.toUpperCase() === 'X') {
+          cell.style.backgroundColor = 'transparent';
+        } else if (/^#?[0-9a-fA-F]{6}$/.test(val)) {
+          const color = val.startsWith('#') ? val : `#${val}`;
+          cell.style.backgroundColor = color;
+        }
+      });
+
+      inputGrid.appendChild(input);
+      inputCells.push(input);
+    }
+
+    function copyColors() {
+      const hexList = inputCells.map(input => {
+        const val = input.value.trim();
+        if (val.toUpperCase() === 'X') return `'X'`;
+        if (/^#?[0-9a-fA-F]{6}$/.test(val)) {
+          return `'${val.startsWith('#') ? val : '#' + val}'`;
+        }
+        return `'X'`; // 無效視為 X
+      });
+
+      const formatted =
+        `colorOrder: [\n  ` +
+        hexList.map((v, i) =>
+          `${v}${(i + 1) % cols === 0 ? ',\n  ' : ', '}`
+        ).join('').trim().replace(/,\s*$/, '') +
+        '\n]';
+
+      navigator.clipboard.writeText(formatted).then(() => {
+        alert("✅ HEX 陣列已複製！");
+      });
+    }
+
+    renderAllGrids();
+    // --- 線性漸層工具 ---
+    function generateLinearColors(count, start, end) {
+      const colors = [];
+      for (let i = 0; i < count; i++) {
+        const t = count === 1 ? 0 : i / (count - 1);
+        const color = lerpColor(start, end, t);
+        colors.push(rgbToHex(color));
+      }
+      return colors;
+    }
+
+    function renderLinearStrips() {
+      const start = hexToRgb(document.getElementById("linearStart").value);
+      const end = hexToRgb(document.getElementById("linearEnd").value);
+      const container = document.getElementById("linearStrips");
+      container.innerHTML = "";
+
+      [5, 4, 3].forEach(count => {
+        const colors = generateLinearColors(count, start, end);
+        const strip = document.createElement("div");
+        strip.style.display = "grid";
+        strip.style.gridTemplateColumns = `repeat(${count}, 40px)`;
+        strip.style.gap = "4px";
+
+        colors.forEach(hex => {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.style.backgroundColor = hex;
+          cell.dataset.color = hex;
+          cell.title = hex;
+
+          cell.addEventListener("click", () => {
+            navigator.clipboard.writeText(hex);
+          });
+
+          strip.appendChild(cell);
+        });
+
+        container.appendChild(strip);
+      });
+    }
+
+    // 初始化與事件監聽
+    document.getElementById("linearStart").addEventListener("input", renderLinearStrips);
+    document.getElementById("linearEnd").addEventListener("input", renderLinearStrips);
+    renderLinearStrips();
+
+  </script>
+</body>
+</html>
