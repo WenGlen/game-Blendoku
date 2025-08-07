@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>色獨 v5 </title>
+  <title>色獨 v6 </title>
   <link rel="stylesheet" href="css/Blendokubase.css">
   <link rel="icon" href="img/BlendokuLogo.png" type="image/x-icon">
 
@@ -19,29 +19,44 @@
       </div>
 
       <h3 class="levelNum">Lv 1</h3>
-      <div class="menu">v5</div>
+      <div class="menu">v6</div>
+
     </div>
 
     <div class="panel">
       
       <!-- 作答區 -->
       <div id="board" class="board grid-board"></div>
-      <div class="gapline"></div>
 
-      <!-- 起始色塊區（仍是每格一塊） -->
+      <div class="gap-line"></div>
+
+      <!-- 起始色塊區 -->
       <div id="start-area" class="board start-area"></div>
 
-      <section class="instruction">
-        <h3>操作說明</h3>
-        <ul>
-          <li>請將下方的色塊拖曳到上方的格子中，依照色彩漸層邏輯，排列出正確順序。</li>
-          <li>拖曳色塊到任意空格或已有色塊的格子，色塊會移動到該位置或與該處色塊交換位置。</li>
-          <li>有些位置已放置色塊屬於提示格，無法移動。</li>
-          <li>移動色塊至全部正確時，會自動顯示通關提示。</li>
-        </ul>
-      </section>
+      <div class="gap-space"></div>
+
+      <!-- 記分區 -->
+      <div class="info-bar">
+        <span>步數：<span id="step-count">0</span></span>
+        <span>時間：<span id="timer">0.0</span> 秒</span>
+      </div>
+
+      <!-- 彈窗 --> 
+      <div id="win-popup" class="popup hidden">
+        <div class="popup-content">
+          <h3>🎉　　過關！　　🎉</h3>
+          <div class="popup-content pass-record">
+            <p>步數：<span id="popup-step">0</span></p>
+            <p>時間：<span id="popup-time">0.0</span> 秒</p>
+          </div>
+          <div>
+            <button onclick="restartGame()">再次挑戰</button>
+          </div>
+        </div>
+      </div>
       
     </div>
+
 
     <footer class="footer">
       <p>製作者: Glen</p>

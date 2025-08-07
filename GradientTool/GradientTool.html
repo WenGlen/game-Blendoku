@@ -16,11 +16,13 @@
     label {
       margin-right: 10px;
     }
+    .grid-wrapper {
+      margin-bottom: 20px;
+    }
     .grid {
       display: grid;
-      grid-template-columns: repeat(5, 40px);
-      grid-template-rows: repeat(5, 40px);
       gap: 4px;
+      margin-bottom: 10px;
     }
     .cell {
       width: 40px;
@@ -52,9 +54,10 @@
     <label>Top Right <input type="color" id="tr" value="#00ff00" /></label>
     <label>Bottom Left <input type="color" id="bl" value="#0000ff" /></label>
     <label>Bottom Right <input type="color" id="br" value="#ffff00" /></label>
-    <button onclick="renderGrid()">Generate</button>
+    <button onclick="renderAllGrids()">Generate</button>
   </div>
-  <div class="grid" id="grid"></div>
+
+  <div id="grids"></div>
 
   <script>
     function hexToRgb(hex) {
@@ -82,43 +85,76 @@
       };
     }
 
-    function renderGrid() {
+    function generateGridColors(rows, cols, tl, tr, bl, br) {
+      const colors = [];
+      for (let y = 0; y < rows; y++) {
+        const ty = y / (rows - 1);
+        for (let x = 0; x < cols; x++) {
+          const tx = x / (cols - 1);
+          const top = lerpColor(tl, tr, tx);
+          const bottom = lerpColor(bl, br, tx);
+          const final = lerpColor(top, bottom, ty);
+          colors.push(rgbToHex(final));
+        }
+      }
+      return colors;
+    }
+
+    function renderGrid(colors, rows, cols, containerId) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "grid-wrapper";
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      grid.style.gridTemplateColumns = `repeat(${cols}, 40px)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, 40px)`;
+
+      colors.forEach(hex => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.style.backgroundColor = hex;
+        cell.dataset.color = hex;
+
+        cell.addEventListener("click", () => {
+          navigator.clipboard.writeText(hex);
+        });
+
+        grid.appendChild(cell);
+      });
+
+      const button = document.createElement("button");
+      button.textContent = `Copy ${rows}x${cols} HEX`;
+      button.addEventListener("click", () => {
+        const formatted = `  colorOrder: [\n    ` +
+          colors.map((c, i) => `'${c}'${(i + 1) % cols === 0 ? ',\n    ' : ', '}`).join('')
+          .trim().replace(/,\s*$/, '') + '\n  ]';
+        navigator.clipboard.writeText(formatted);
+        button.textContent = "Copied!";
+        setTimeout(() => button.textContent = `Copy ${rows}x${cols} HEX`, 1500);
+      });
+
+      wrapper.appendChild(grid);
+      wrapper.appendChild(button);
+
+      document.getElementById(containerId).appendChild(wrapper);
+    }
+
+    function renderAllGrids() {
       const tl = hexToRgb(document.getElementById("tl").value);
       const tr = hexToRgb(document.getElementById("tr").value);
       const bl = hexToRgb(document.getElementById("bl").value);
       const br = hexToRgb(document.getElementById("br").value);
 
-      const grid = document.getElementById("grid");
-      grid.innerHTML = "";
+      const grids = document.getElementById("grids");
+      grids.innerHTML = "";
 
-      for (let y = 0; y < 5; y++) {
-        const ty = y / 4;
-        for (let x = 0; x < 5; x++) {
-          const tx = x / 4;
-          const top = lerpColor(tl, tr, tx);
-          const bottom = lerpColor(bl, br, tx);
-          const final = lerpColor(top, bottom, ty);
-          const hex = rgbToHex(final);
-
-          const cell = document.createElement("div");
-          cell.className = "cell";
-          cell.style.backgroundColor = hex;
-          cell.dataset.color = hex;
-
-          // 點擊即複製 HEX 色碼
-          cell.addEventListener("click", () => {
-            navigator.clipboard.writeText(hex).then(() => {
-              cell.title = "Copied!";
-              setTimeout(() => cell.title = "", 1000);
-            });
-          });
-
-          grid.appendChild(cell);
-        }
-      }
+      [[5, 5], [4, 4], [3, 3]].forEach(([rows, cols]) => {
+        const colors = generateGridColors(rows, cols, tl, tr, bl, br);
+        renderGrid(colors, rows, cols, "grids");
+      });
     }
 
-    renderGrid();
+    renderAllGrids();
   </script>
 </body>
 </html>

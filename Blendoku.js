@@ -1,87 +1,87 @@
-//______參數設定______//
-
+// ====== 遊戲設定參數 ======
 const gameData = {
   rows: 3,
   cols: 3,
   fixedIndices: [0, 2, 5, 6], // 哪些格子是提示格
   colorOrder: [
-    '#0c6b00', '#067354', '#007ba7',
-    '#86a927', '#7eb27d', '#76bad3',
-    '#ffe14d', '#f5f0a6', '#ebf9ff'
+    '#ffffff', 'X', '#3382d7',
+    '#fde280', '#a7ad91', '#5178a3',
+    '#fac400', 'X', '#6e6e6e'
   ] // index 為正確答案順序（由左到右上到下）
 };
 
-//等整個網頁載入後再執行遊戲
+
+// ====== 等整個頁面載入後再開始 ======
 document.addEventListener('DOMContentLoaded', () => {
   startGame(gameData);
+  document.getElementById('win-popup').classList.add('hidden'); // 確保彈窗一開始是隱藏的
 });
 
-//______主流程組裝邏輯______//
-
-// 初始化整個遊戲
-function startGame(gameData) {
-  const { rows, cols, fixedIndices, colorOrder } = gameData;
-  const total = rows * cols;
-
-  generateBoard(rows, cols, fixedIndices, colorOrder);// 傳入固定格資訊
-  generateTiles(colorOrder, fixedIndices);// 傳入固定 tile 資訊
+// ====== 主流程函式 ======
+function startGame({ rows, cols, fixedIndices, colorOrder }) {
+  generateBoard({ rows, cols, fixedIndices, colorOrder });
+  generateTiles(colorOrder, fixedIndices);
   setupDragAndDrop();
 }
 
-
-// 建立作答區格子
-function generateBoard(rows, cols, fixedIndices = [], colorOrder = []) {
+// ====== 建立作答區格子 ======
+function generateBoard({ rows, cols, fixedIndices, colorOrder }) {
   const board = document.getElementById('board');
   board.innerHTML = '';
-
-  // 設定最大寬度為 600px
-  const maxWidth = 536;
-  //const cellSize = Math.floor(maxWidth / 7); // 每格寬度
-  const cellSize = 60; // 每格寬度
-  board.style.width = `${cellSize * cols}px`;
-  board.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
+  board.style.gridTemplateColumns = `repeat(${cols}, 60px)`;
 
   for (let i = 0; i < rows * cols; i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
-    cell.style.width = `${cellSize}px`;
-    cell.style.height = `${cellSize}px`;
 
-    cell.dataset.answer = i.toString();
+    const color = colorOrder[i];
 
-    if (fixedIndices.includes(i)) {
-      cell.dataset.fixed = 'true';
-      cell.classList.add('fixed');
+    if (color === 'X') {
+      // 被隱藏的格子
+      cell.classList.add('hidden-cell');
+      cell.dataset.disabled = 'true';
+    } else {
+      // 一般格子
+      cell.dataset.answer = i.toString(); // 正確答案是位置順序
 
-      const tile = createTile(i, colorOrder[i], true);
-      cell.appendChild(tile);
-      cell.dataset.current = i.toString();
+      if (fixedIndices.includes(i)) {
+        cell.classList.add('fixed');
+        cell.dataset.fixed = 'true';
+      }
     }
 
     board.appendChild(cell);
   }
 }
 
-// 建立所有 tile，部分塞進固定提示格，其餘放在起始區
+
+// ====== 建立所有 tile，並放入起始區（不含固定格）======
 function generateTiles(colorOrder, fixedIndices = []) {
   const startArea = document.getElementById('start-area');
   startArea.innerHTML = '';
 
-  const indices = []; // 儲存非固定格的 index
-
-  // 先把哪些不是提示格記下來
-  colorOrder.forEach((_, i) => {
-    if (!fixedIndices.includes(i)) {
-      indices.push(i);
+   // 建立並放入固定格 tile
+  fixedIndices.forEach(i => {
+    const color = colorOrder[i];
+    const tile = createTile(i, color, true);
+    const cell = document.querySelector(`#board .cell:nth-child(${i + 1})`);
+    if (cell) {
+      cell.appendChild(tile);
+      cell.dataset.current = i.toString(); // 設定目前值方便檢查答案
     }
   });
 
-  // 將 index 打亂 → 達到隨機排列顏色的目的
-  shuffleArray(indices);
+  // 建立可動格 tile
+  const movableIndices = colorOrder
+    .map((_, i) => i)
+    .filter(i => !fixedIndices.includes(i) && colorOrder[i] !== 'X');
 
-  // 依照打亂的 index 排列色塊
-  indices.forEach(i => {
+  shuffleArray(movableIndices); // 隨機打亂順序
+
+  movableIndices.forEach(i => {
     const tile = createTile(i, colorOrder[i]);
+    if (!tile) return;
+
     const wrapper = document.createElement('div');
     wrapper.classList.add('cell', 'initial');
     wrapper.appendChild(tile);
@@ -89,67 +89,68 @@ function generateTiles(colorOrder, fixedIndices = []) {
   });
 }
 
+// ====== 建立單個 tile ======
 function createTile(index, color, isFixed = false) {
+  if (!color || color === 'X') return null;
   const tile = document.createElement('div');
   tile.classList.add('tile');
   tile.dataset.index = index.toString();
   tile.dataset.color = color;
   tile.style.backgroundColor = color;
 
-  if (!isFixed) {
-    tile.setAttribute('draggable', 'true');
-  } else {
+  if (isFixed) {
     tile.classList.add('fixed-tile');
     tile.setAttribute('draggable', 'false');
+  } else {
+    tile.setAttribute('draggable', 'true');
   }
 
   return tile;
 }
 
-  // 塞固定提示格
-  fixedIndices.forEach(i => {
-    const cell = document.querySelector(`#board .cell:nth-child(${i + 1})`);
-    const tile = tiles[i];
-    tile.setAttribute('draggable', 'false');
-    tile.classList.add('fixed-tile');
-    cell.appendChild(tile);
-    cell.dataset.current = i.toString();
-  });
+// ====== 計分功能 =====
 
-  // 剩下的 tile 放到起始格
-  tiles.forEach((tile, i) => {
-    if (!fixedIndices.includes(i)) {
-      const wrapper = document.createElement('div');
-      wrapper.classList.add('cell', 'initial');
-      wrapper.appendChild(tile);
-      startArea.appendChild(wrapper);
-    }
-  });
+let stepCount = 0;
+let startTime = null;
+let timerInterval = null;
+let hasStarted = false;
 
 
+// 開始記錄時間
+function startTimer() {
+  startTime = Date.now();
+  timerInterval = setInterval(() => {
+    const elapsed = (Date.now() - startTime) / 1000; // 變成秒（浮點數）
+    const formatted = elapsed.toFixed(1); // 小數點後一位
+    document.getElementById('timer').textContent = formatted;
+  }, 100);
+}
 
-//______遊戲互動邏輯______//
+// 終止紀錄時間
+function stopTimer() {
+  clearInterval(timerInterval);
+}
 
-// 負責設定拖曳邏輯的函數
+
+
+// ====== 設定拖曳與點擊互動邏輯 =====
 function setupDragAndDrop() {
   const tiles = document.querySelectorAll('.tile');
   const cells = document.querySelectorAll('.cell');
   let selectedTile = null;
 
-  // === 拖曳邏輯（桌機） ===
+  // 拖曳事件（桌機）
   tiles.forEach(tile => {
     tile.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('text/plain', tile.dataset.index);
     });
 
-    // 新增點擊邏輯（手機/桌機共用）
-    tile.addEventListener('click', (e) => {
-      // 點已選中的 tile → 取消選取
+    // 點擊事件（手機/桌機）
+    tile.addEventListener('click', () => {
       if (selectedTile === tile) {
         tile.classList.remove('selected');
         selectedTile = null;
       } else {
-        // 移除其他選取
         document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
         tile.classList.add('selected');
         selectedTile = tile;
@@ -157,17 +158,20 @@ function setupDragAndDrop() {
     });
   });
 
+  // 放置格子邏輯
   cells.forEach(cell => {
     cell.addEventListener('dragover', (e) => e.preventDefault());
 
     cell.addEventListener('drop', (e) => {
       e.preventDefault();
+      if (cell.dataset.fixed === 'true') return;
+      if (cell.dataset.disabled === 'true') return;
       const tileIndex = e.dataTransfer.getData('text/plain');
       const draggedTile = document.querySelector(`.tile[data-index="${tileIndex}"]`);
       moveTileToCell(draggedTile, cell);
     });
 
-    // 點擊格子：執行選中 tile → 移入該格
+    // 點格子 → 把選到的 tile 放進來
     cell.addEventListener('click', () => {
       if (!selectedTile) return;
       moveTileToCell(selectedTile, cell);
@@ -177,72 +181,108 @@ function setupDragAndDrop() {
   });
 }
 
+// === 移動 tile 進指定格子 ===
+function moveTileToCell(tile, targetCell) {
+  if (targetCell.dataset.fixed === 'true') return; // 固定格不能動
 
+  const currentTile = targetCell.querySelector('.tile');
+  const originalParent = tile.parentElement;
 
-
-
-// 手指點擊
-function moveTileToCell(draggedTile, cell) {
-  if (cell.dataset.fixed === 'true') return;
-
-  const currentTileInCell = cell.querySelector('.tile');
-  const originalParent = draggedTile.parentElement;
-
-  if (currentTileInCell) {
-    originalParent.appendChild(currentTileInCell);
-    if (originalParent.classList.contains('cell')) {
-      originalParent.dataset.current = currentTileInCell.dataset.index;
-    } else {
-      delete originalParent.dataset.current;
-    }
+  if (currentTile) {
+    // 如果原本格子有 tile → 交換
+    originalParent.appendChild(currentTile);
+    updateCurrentIndex(originalParent, currentTile);
   } else {
-    if (originalParent.classList.contains('cell')) {
-      delete originalParent.dataset.current;
-    }
+    // 如果原本是空格 → 移出原資料
+    clearCurrentIndex(originalParent);
   }
 
-  cell.innerHTML = '';
-  cell.appendChild(draggedTile);
-  cell.dataset.current = draggedTile.dataset.index;
+  // 放進新格子
+  targetCell.innerHTML = '';
+  targetCell.appendChild(tile);
+  targetCell.dataset.current = tile.dataset.index;
 
-  setTimeout(checkAnswer, 50);
+
+  // 第一次移動後開始計時
+  if (!hasStarted) {
+    startTimer();
+    hasStarted = true;
+  }
+
+  // 每次移動增加步數
+  stepCount++;
+  document.getElementById('step-count').textContent = stepCount;
+
+
+  setTimeout(checkAnswer, 50); // 延遲一點再判斷答案
 }
 
+function updateCurrentIndex(parent, tile) {
+  if (parent.classList.contains('cell')) {
+    parent.dataset.current = tile.dataset.index;
+  }
+}
 
+function clearCurrentIndex(parent) {
+  if (parent.classList.contains('cell')) {
+    delete parent.dataset.current;
+  }
+}
 
-
-
-
-// 檢查是否所有格子都擺對的函數
+// === 檢查答案 ===
 function checkAnswer() {
-    const cells = document.querySelectorAll('#board .cell'); // 只檢查作答區格子
-    let correct = true;
+  const cells = document.querySelectorAll('#board .cell');
+  let correct = true;
 
-    cells.forEach(cell => {
-        if (cell.dataset.answer !== cell.dataset.current) {
-        correct = false;
-        }
-    });
+  cells.forEach(cell => {
+    if (cell.dataset.answer !== cell.dataset.current) {
+      correct = false;
+    }
+  });
 
-    if (correct) {
-        alert('正確！🎉');
+  if (correct) {
+    showPopup(); // 顯示彈窗
+    stopTimer?.(); // 如果有定時器函式
   }
 }
 
+// === 顯示 / 關閉彈窗 ===
 
-//______工具函式（輔助型小工具）______//
+// 顯示彈窗
+function showPopup() {
+  // 更新彈窗裡的數字
+  document.getElementById('popup-step').textContent = stepCount;
+  
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  document.getElementById('popup-time').textContent = elapsed;
 
-// 產生一組漸層顏色
-function generateGradientColors(count) {
-  const colors = [];
-  for (let i = 0; i < count; i++) {
-    const hue = 30 + (i * 360 / count);
-    colors.push(`hsl(${hue}, 80%, 60%)`);
-  }
-  return colors;
+  // 顯示彈窗
+  document.getElementById('win-popup').classList.remove('hidden');
 }
 
-// 陣列亂數洗牌
+//關閉彈窗
+function closePopup() {
+  document.getElementById('win-popup').classList.add('hidden');
+}
+
+//重啟遊戲
+function restartGame() {
+  document.getElementById('win-popup').classList.add('hidden'); // 關閉彈窗
+
+  // 歸零狀態
+  stepCount = 0;
+  hasStarted = false;
+  clearInterval(timerInterval);
+  document.getElementById('step-count').textContent = '0';
+  document.getElementById('timer').textContent = '0.0';
+
+  // 重新啟動遊戲（你可以指定同一個題目或重新產生）
+  startGame(gameData); // 或 setupPuzzle(...)，看你目前使用哪種
+}
+
+// === 工具函式 ===
+
+// 洗牌陣列
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -250,10 +290,9 @@ function shuffleArray(array) {
   }
 }
 
-// 取得 count 個不重複隨機索引
+// 取得不重複隨機索引（未使用）
 function getRandomIndices(total, count) {
   const indices = Array.from({ length: total }, (_, i) => i);
   shuffleArray(indices);
   return indices.slice(0, count);
 }
-
