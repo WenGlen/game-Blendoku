@@ -513,3 +513,36 @@ function closeMenu() {
   const panel = document.querySelector('.panel');
   if (panel) panel.style.pointerEvents = 'auto';
 }
+
+
+
+// ===== RWD =====
+
+function setRealVH(){
+  const vh = window.innerHeight * 0.01; // 1vh 的 px 值
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+
+// 讓 #game-stage 等比塞進 #game-wrap
+const BASE_W = 360, BASE_H = 640;
+
+function scaleStage(){
+  const wrap = document.getElementById('game-wrap');
+  const stage = document.getElementById('game-stage');
+  const scale = Math.min(wrap.clientWidth / BASE_W, wrap.clientHeight / BASE_H);
+  stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+
+window.addEventListener('resize', setRealVH); setRealVH();
+window.addEventListener('resize', scaleStage);scaleStage();
+
+
+
+function fitCanvas(canvas, w = BASE_W, h = BASE_H){
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  canvas.width  = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // 座標仍用 CSS px
+}

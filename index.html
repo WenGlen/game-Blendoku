@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 視需要關閉縮放（某些瀏覽器仍可雙指放大，取決於需求） -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
   <title>色獨 v8 </title>
   <link rel="stylesheet" href="css/Blendokubase.css">
   <link rel="icon" href="img/BlendokuLogo.png" type="image/x-icon">
@@ -111,24 +113,24 @@
           <!-- Step 4 -->
           
           <section class="t-step" data-step="3">
-            <h3>全部排放正確後，會自動跳出過關彈窗</h3>
+            <h3>全部排放正確後</h3>
+            <h3>會自動跳出過關彈窗</h3>
 
             <div class="demo-panel">
               <div class="demo demo-step4">
                 <div class="grid finish-scene">
-                  <!-- 四格：1、3、4 已放；2 是空 -->
-                  <div class="cell"><div class="tile tile-a"></div></div>   <!-- 第1格 綠 -->
-                  <div class="cell cell-2"><!-- 空 --></div>                <!-- 第2格 空 -->
-                  <div class="cell"><div class="tile tile-b"></div></div>   <!-- 第3格 黃 -->
-                  <div class="cell"><div class="tile tile-d"></div></div>   <!-- 第4格 黃 -->
-                </div>
-
-                <!-- 浮動中的最後一顆（被手抓著的那顆）：一開始在第1格左邊 -->
-                <div class="tile tile-c floating"></div>
-
-                <!-- 游標：兩張圖 → 用 opacity 切換 -->
-                <img class="cursor-hand idle"     src="img/hand-cursor-canDrag.png"  alt="">
-                <img class="cursor-hand grabbing" src="img/hand-cursor-draging.png"  alt="">
+                  <!-- 浮動中的最後一顆 / 游標：原本在這裡（容器層級） -->
+                  <div class="grid finish-scene">
+                    <div class="cell"><div class="tile tile-a"></div></div>
+                    <div class="cell cell-2"></div>
+                    <div class="cell"><div class="tile tile-c"></div></div>
+                    <div class="cell"><div class="tile tile-d"></div></div>
+                  
+                    <!-- ✅ 改到 grid 裡面，定位基準 = grid 左上角 -->
+                    <div class="tile tile-b floating"></div>
+                    <img class="cursor-hand idle"     src="img/hand-cursor-canDrag.png"  alt="">
+                    <img class="cursor-hand grabbing" src="img/hand-cursor-draging.png"  alt="">
+                  </div>
               </div>
             </div>
 
@@ -199,9 +201,13 @@
     </div>
 
     <footer class="footer">
-      <p>製作者: Glen  版本: v10.0</p>
+      <p>製作者: Glen  版本: v10.1</p>
       <p>玩法機制參考: Blendoku2</p>
     </footer>
+  </div>
+
+  <div id="game-wrap">
+    <div id="game-stage"><!-- 你的遊戲 DOM/Canvas --></div>
   </div>
 
   <!-- js -->
