@@ -261,6 +261,22 @@
     for (let i = 0; i < rows * cols; i++) {
       const cell = document.createElement("div");
       cell.className = "cell";
+
+      // ✅ 加上點擊可複製功能
+      cell.addEventListener("click", () => {
+        const hex = cell.style.backgroundColor;
+        if (!hex || hex === 'transparent') return;
+        const computed = window.getComputedStyle(cell).backgroundColor;
+        const match = computed.match(/\d+/g);
+        if (match && match.length >= 3) {
+          const r = parseInt(match[0]);
+          const g = parseInt(match[1]);
+          const b = parseInt(match[2]);
+          const hexValue = rgbToHex({ r, g, b });
+          navigator.clipboard.writeText(hexValue);
+        }
+      });
+
       displayGrid.appendChild(cell);
       displayCells.push(cell);
 

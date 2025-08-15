@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>色獨 v8 </title>
+  <title>TEST </title>
   <link rel="stylesheet" href="css/Blendokubase.css">
   <link rel="icon" href="img/BlendokuLogo.png" type="image/x-icon">
 
@@ -15,27 +15,13 @@
     <!-- Start Screen -->
     <div id="main-menu">
       <img src="img/BlendokuLogo.png" alt="">
-      <h1 class="game-title">色獨</h1>
+      <h1 class="game-title">TEST</h1>
 
       <!-- 主動作列 -->
       <div class="menu-actions">
         <button id="btn-tutorial" class="btn primary">玩法教學</button>
         <button class="btn primary" data-level="0">開始遊戲 (Lv1)</button>
       </div>
-
-      <!-- 固定 10 顆關卡按鈕 -->
-      <div id="level-grid" class="level-grid">
-        <button class="level-btn" data-level="1">Lv2</button>
-        <button class="level-btn" data-level="2">Lv3</button>
-        <button class="level-btn" data-level="3">Lv4</button>
-        <button class="level-btn" data-level="4">Lv5</button>
-        <button class="level-btn" data-level="5">Lv6</button>
-        <button class="level-btn" data-level="6">Lv7</button>
-        <button class="level-btn" data-level="7">Lv8</button>
-        <button class="level-btn" data-level="8">Lv9</button>
-        <button class="level-btn" data-level="9">Lv10</button>
-      </div>
-    </div>
 
 
     <!-- Tutorial Overlay -->
@@ -47,66 +33,6 @@
         </div>
 
         <div class="tutorial-body">
-          <!-- Step 1 -->
-          <section class="t-step active" data-step="0">
-            <h3>目標：將每一條直線上的色塊都排成漸層</h3>
-            <div class="demo-panel">
-              <div class="demo-gradients">
-                <div class="grid">
-                  <div class="cell"><div class="tile color1"></div></div>
-                  <div class="cell"><div class="tile color2"></div></div>
-                  <div class="cell"><div class="tile color3"></div></div>
-                  <div class="cell"><div class="tile color4"></div></div>
-                </div>
-                <div class="grid">
-                  <div class="cell"><div class="tile color5"></div></div>
-                  <div class="cell"><div class="tile color6"></div></div>
-                  <div class="cell"><div class="tile color7"></div></div>
-                  <div class="cell"><div class="tile color8"></div></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Step 2 -->
-          <section class="t-step" data-step="1">
-            <h3>長按可拿起色塊</h3>
-            <h3>但上鎖的色塊無法被拿起</h3>
-            <div class="demo-panel">
-              <div class="grid pick-scene">
-                <div class="cell "><div class="tile pick-t1"></div></div>
-                <div class="cell mid"><div class="tile pick-t2"></div></div>
-                <div class="cell fixed"><div class="tile pick-t3 "></div></div>
-
-                <!-- 游標：兩張圖用 display 切換 -->
-                <img class="cursor-hand idle"     src="img/hand-cursor-canDrag.png"  alt="">
-                <img class="cursor-hand grabbing" src="img/hand-cursor-draging.png"  alt="">
-              </div>
-            </div>
-
-          </section>
-
-          <!-- Step 3 -->
-          <section class="t-step" data-step="2">
-            <h3>被拿起的色塊可直接放至空格中</h3>
-            <h3>若該處已有色塊則會交換位置</h3>
-            <div class="demo-panel">
-              <div class="demo demo-step3">
-                <div class="grid swap-scene">
-                  <!-- 1 行 4 格 -->
-                  <div class="cell"><div class="tile tile-a"></div></div>
-                  <div class="cell"></div>
-                  <div class="cell"></div>
-                  <div class="cell"><div class="tile tile-b"></div></div>
-
-                  <!-- 游標：兩張圖用 display 切換 -->
-                  <img class="cursor-hand idle"     src="img/hand-cursor-canDrag.png"  alt="">
-                  <img class="cursor-hand grabbing" src="img/hand-cursor-draging.png"  alt="">
-                </div>
-              </div>
-            </div>
-
-          </section>
 
           <!-- Step 4 -->
           
@@ -135,7 +61,6 @@
             <!-- 教學中的假彈窗（CSS 動畫出現/隱藏） -->
             <div class="tutorial-fake-popup">🎉　完成！　🎉</div>
           </section>
-
 
         </div>
         <div class="tutorial-footer">
@@ -199,7 +124,7 @@
     </div>
 
     <footer class="footer">
-      <p>製作者: Glen  版本: v10.0</p>
+      <p>製作者: Glen  版本: v9.1</p>
       <p>玩法機制參考: Blendoku2</p>
     </footer>
   </div>

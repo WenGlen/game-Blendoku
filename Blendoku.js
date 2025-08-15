@@ -1,58 +1,4 @@
-// ====== 遊戲設定參數 ======
-const gameLevels = [
-  {
-    rows: 1,
-    cols: 3,
-    fixedIndices: [0],
-    colorOrder: ['#0c6b00', '#86a927', '#ffe14d']
-  },
-  {
-    rows: 3,
-    cols: 3,
-    fixedIndices: [0],
-    colorOrder: [
-      '#ff6a1a', '#ffac22', '#ffed29',
-      'X', '#b6a917', 'X',
-      'X', '#23a300', 'X'
-    ]
-  },
-  {
-    rows: 4,
-    cols: 3,
-    fixedIndices: [0, 2, 11], // 哪些格子是提示格
-    colorOrder: [
-      '#ffffff', 'X', '#4ee9fd',
-      '#ffedaa', '#c6e1ba', '#55c8d9',
-      '#ffda55', 'X', '#5ca8b6',
-      '#ffc800', 'X', '#638792'
-    ]
-  },
-  {
-    rows: 3,
-    cols: 3,
-    fixedIndices: [0, 2, 5], // 哪些格子是提示格
-    colorOrder: [
-      '#0c6b00', '#067354', '#007ba7',
-      '#86a927', 'X', '#76bad3',
-      '#ffe14d', '#f5f0a6', '#ebf9ff'
-    ]
-  },
-  {
-    rows: 5,
-    cols: 5,
-    fixedIndices: [6, 13, 21], // 哪些格子是提示格
-    colorOrder: [
-      'X', '#003166', '#706b5c', '#e0a552', 'X',
-      'X', '#392975', 'X', '#79bc83', 'X',
-      'X', '#732283', '#437b9b', '#12d3b3', 'X',
-      'X', '#ac1a92', 'X', 'X', 'X',
-      '#fd0080', '#e513a0', '#ce27c0', '#b63adf', '#9e4dff'
-    ]
-  }
-];
-
 // ====== 設定計分功能參數 =====
-
 let stepCount = 0;
 let startTime = null;
 let timerInterval = null;
@@ -60,11 +6,63 @@ let hasStarted = false;
 let timeElapsed = 0;
 let currentLevel = 0;
 
-// ====== 等整個頁面載入後再開始 ======
+// ====== 設定主畫面 / 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
-  loadLevel(currentLevel);
-  document.getElementById('win-popup').classList.add('hidden'); // 確保彈窗一開始是隱藏的
+  const menu = document.getElementById('main-menu');
+  const btnStart = document.getElementById('btn-start');
+  const btnTutorial = document.getElementById('btn-tutorial');
+  const levelGrid = document.getElementById('level-grid');
+
+  // 產生 Lv2 ~ LvN 的按鈕（照你的需求放 Lv2–…）
+  renderLevelGrid();
+
+  // 主畫面：開始（直接進 Lv1）
+  btnStart?.addEventListener('click', () => {
+    menu.classList.add('hidden');
+    currentLevel = 0;
+    loadLevel(currentLevel); // Lv1
+  });
+
+  // 主畫面：關卡選擇（統一用 menu 委派處理 data-level）
+  menu.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-level]');
+    if (!btn) return;
+    const i = Number(btn.dataset.level);
+    if (Number.isNaN(i) || i < 0 || i >= gameLevels.length) return; // 安全檢查
+    currentLevel = i;
+    menu.classList.add('hidden');
+    loadLevel(currentLevel);
+  });
+
+  // 玩法教學（暫時佔位）
+  btnTutorial?.addEventListener('click', () => {
+    // TODO: 換成你的自訂教學彈窗
+    // alert('玩法教學（之後改成你的教學 UI）');
+  });
+
+  // 不需要再對 #level-grid 綁 click；用 menu 事件委派即可
 });
+
+// 任何時候要回主畫面（例如暫停或返回選單）
+function openMenu() {
+  document.getElementById('main-menu').classList.remove('hidden');
+  // 可選：暫停計時、關閉底層互動
+  // stopTimer?.();
+}
+
+// 產生關卡按鈕（Lv2 ~ Last）
+function renderLevelGrid() {
+  const grid = document.getElementById('level-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  for (let i = 1; i < gameLevels.length; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'level-btn';
+    btn.textContent = `Lv ${i + 1}`;
+    btn.dataset.level = i;
+    grid.appendChild(btn);
+  }
+}
 
 function loadLevel(index) {
   const levelData = gameLevels[index];
@@ -73,7 +71,7 @@ function loadLevel(index) {
   // ✅ 更新 header 顯示的關卡編號
   document.querySelector('.levelNum').textContent = `Lv ${index + 1}`;
 
-  // 以下保持原本內容
+  // 歸零並關閉彈窗
   stepCount = 0;
   hasStarted = false;
   clearInterval(timerInterval);
@@ -83,7 +81,6 @@ function loadLevel(index) {
 
   startGame(levelData);
 }
-
 
 // ====== 主流程函式 ======
 function startGame({ rows, cols, fixedIndices, colorOrder }) {
@@ -96,7 +93,7 @@ function startGame({ rows, cols, fixedIndices, colorOrder }) {
 function generateBoard({ rows, cols, fixedIndices, colorOrder }) {
   const board = document.getElementById('board');
   board.innerHTML = '';
-  board.style.gridTemplateColumns = `repeat(${cols}, 60px)`;
+  board.style.gridTemplateColumns = `repeat(${cols}, 60px)`; // 60px 可改為 CSS 變數
 
   for (let i = 0; i < rows * cols; i++) {
     const cell = document.createElement('div');
@@ -110,8 +107,7 @@ function generateBoard({ rows, cols, fixedIndices, colorOrder }) {
       cell.dataset.disabled = 'true';
     } else {
       // 一般格子
-      cell.dataset.answer = i.toString(); // 正確答案是位置順序
-
+      cell.dataset.answer = String(i); // 正確答案是位置順序
       if (fixedIndices.includes(i)) {
         cell.classList.add('fixed');
         cell.dataset.fixed = 'true';
@@ -119,23 +115,23 @@ function generateBoard({ rows, cols, fixedIndices, colorOrder }) {
     }
 
     board.appendChild(cell);
+    closeMenu()
   }
 }
-
 
 // ====== 建立所有 tile，並放入起始區（不含固定格）======
 function generateTiles(colorOrder, fixedIndices = []) {
   const startArea = document.getElementById('start-area');
   startArea.innerHTML = '';
 
-   // 建立並放入固定格 tile
+  // 建立並放入固定格 tile
   fixedIndices.forEach(i => {
     const color = colorOrder[i];
     const tile = createTile(i, color, true);
     const cell = document.querySelector(`#board .cell:nth-child(${i + 1})`);
-    if (cell) {
+    if (cell && tile) {
       cell.appendChild(tile);
-      cell.dataset.current = i.toString(); // 設定目前值方便檢查答案
+      cell.dataset.current = String(i); // 設定目前值方便檢查答案
     }
   });
 
@@ -149,7 +145,6 @@ function generateTiles(colorOrder, fixedIndices = []) {
   movableIndices.forEach(i => {
     const tile = createTile(i, colorOrder[i]);
     if (!tile) return;
-
     const wrapper = document.createElement('div');
     wrapper.classList.add('cell', 'initial');
     wrapper.appendChild(tile);
@@ -162,7 +157,7 @@ function createTile(index, color, isFixed = false) {
   if (!color || color === 'X') return null;
   const tile = document.createElement('div');
   tile.classList.add('tile');
-  tile.dataset.index = index.toString();
+  tile.dataset.index = String(index);
   tile.dataset.color = color;
   tile.style.backgroundColor = color;
 
@@ -172,12 +167,8 @@ function createTile(index, color, isFixed = false) {
   } else {
     tile.setAttribute('draggable', 'true');
   }
-
   return tile;
 }
-
-
-
 
 // 開始記錄時間
 function startTimer() {
@@ -185,8 +176,7 @@ function startTimer() {
   timerInterval = setInterval(() => {
     const elapsed = (Date.now() - startTime) / 1000; // 秒數
     timeElapsed = elapsed; // ✅ 把最新秒數存進全域變數
-    const formatted = elapsed.toFixed(1);
-    document.getElementById('timer').textContent = formatted;
+    document.getElementById('timer').textContent = elapsed.toFixed(1);
   }, 100);
 }
 
@@ -194,8 +184,6 @@ function startTimer() {
 function stopTimer() {
   clearInterval(timerInterval);
 }
-
-
 
 // ====== 設定拖曳與點擊互動邏輯 =====
 function setupDragAndDrop() {
@@ -232,7 +220,7 @@ function setupDragAndDrop() {
       if (cell.dataset.disabled === 'true') return;
       const tileIndex = e.dataTransfer.getData('text/plain');
       const draggedTile = document.querySelector(`.tile[data-index="${tileIndex}"]`);
-      moveTileToCell(draggedTile, cell);
+      if (draggedTile) moveTileToCell(draggedTile, cell);
     });
 
     // 點格子 → 把選到的 tile 放進來
@@ -266,7 +254,6 @@ function moveTileToCell(tile, targetCell) {
   targetCell.appendChild(tile);
   targetCell.dataset.current = tile.dataset.index;
 
-
   // 第一次移動後開始計時
   if (!hasStarted) {
     startTimer();
@@ -276,7 +263,6 @@ function moveTileToCell(tile, targetCell) {
   // 每次移動增加步數
   stepCount++;
   document.getElementById('step-count').textContent = stepCount;
-
 
   setTimeout(checkAnswer, 50); // 延遲一點再判斷答案
 }
@@ -293,15 +279,13 @@ function clearCurrentIndex(parent) {
   }
 }
 
-// === 檢查答案 ===
+// === 檢查是否通關 ===
 function checkAnswer() {
-  const cells = document.querySelectorAll('#board .cell');
+  const cells = document.querySelectorAll('#board .cell'); // 只檢查作答區
   let correct = true;
 
   cells.forEach(cell => {
-    if (cell.dataset.answer !== cell.dataset.current) {
-      correct = false;
-    }
+    if (cell.dataset.answer !== cell.dataset.current) correct = false;
   });
 
   if (correct) {
@@ -310,27 +294,29 @@ function checkAnswer() {
   }
 }
 
-
 // === 顯示 / 關閉彈窗 ===
-
-// 顯示彈窗
 function showPopup() {
   // 更新彈窗裡的數字
   document.getElementById('popup-step').textContent = stepCount;
-  
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   document.getElementById('popup-time').textContent = elapsed;
+
+  const nextBtn = document.querySelector('#win-popup button[onclick="nextLevel()"]');
+  if (currentLevel >= gameLevels.length - 1) {
+    nextBtn.textContent = '回主選單';
+  } else {
+    nextBtn.textContent = '下一關';
+  }
 
   // 顯示彈窗
   document.getElementById('win-popup').classList.remove('hidden');
 }
 
-//關閉彈窗
 function closePopup() {
   document.getElementById('win-popup').classList.add('hidden');
 }
 
-//重啟遊戲
+// 重啟遊戲（留在同一關）
 function restartGame() {
   document.getElementById('win-popup').classList.add('hidden'); // 關閉彈窗
 
@@ -341,23 +327,22 @@ function restartGame() {
   document.getElementById('step-count').textContent = '0';
   document.getElementById('timer').textContent = '0.0';
 
-  // 重新啟動遊戲（你可以指定同一個題目或重新產生）
-  startGame(gameData); // 或 setupPuzzle(...)，看你目前使用哪種
-}
-
- // 進下一關
-function nextLevel() {
-  currentLevel++;
-  if (currentLevel >= gameLevels.length) {
-    alert("你已完成所有關卡！");
-    return;
-  }
+  // 重新載入目前關卡
   loadLevel(currentLevel);
 }
 
-// === 工具函式 ===
+// 進下一關
+function nextLevel() {
+  if (currentLevel >= gameLevels.length - 1) {
+    // 最後一關 → 回主選單
+    openMenu();
+  } else {
+    currentLevel++;
+    loadLevel(currentLevel);
+  }
+}
 
-// 洗牌陣列
+// === 工具函式 ===
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -370,4 +355,161 @@ function getRandomIndices(total, count) {
   const indices = Array.from({ length: total }, (_, i) => i);
   shuffleArray(indices);
   return indices.slice(0, count);
+}
+
+
+
+
+// home 鍵控制回主畫面
+document.addEventListener('DOMContentLoaded', () => {
+  const menu = document.getElementById('main-menu');
+  const btnMainMenu = document.getElementById('btn-main-menu');
+
+  // 回主畫面按鈕
+  btnMainMenu.addEventListener('click', () => {
+    // 暫停計時（如果有）
+    if (typeof stopTimer === 'function') stopTimer();
+
+    // 顯示主畫面
+    openMenu();
+  });
+});
+
+function openMenu() {
+  document.getElementById('main-menu').classList.remove('hidden');
+
+  // 可選：阻擋底層遊戲操作（避免誤點）
+  const panel = document.querySelector('.panel');
+  if (panel) panel.style.pointerEvents = 'none';
+}
+
+function closeMenu() {
+  document.getElementById('main-menu').classList.add('hidden');
+
+  // 恢復底層遊戲操作
+  const panel = document.querySelector('.panel');
+  if (panel) panel.style.pointerEvents = 'auto';
+}
+
+
+// ===== 教學面板邏輯 =====
+const TUTORIAL_STEPS = 4;
+let tutorialIndex = 0;
+
+
+function openTutorial() {
+  tutorialIndex = 0;
+  syncTutorialUI();
+  document.getElementById('tutorial').classList.remove('hidden');
+  document.getElementById('tutorial').setAttribute('aria-hidden', 'false');
+}
+
+function closeTutorial() {
+  document.getElementById('tutorial').classList.add('hidden');
+  document.getElementById('tutorial').setAttribute('aria-hidden', 'true');
+}
+
+function nextTutorial() {
+  if (tutorialIndex < TUTORIAL_STEPS - 1) {
+    tutorialIndex++;
+    syncTutorialUI();
+  } else {
+    // 最後一頁 → 開始 Lv1
+    closeTutorial();
+    document.getElementById('main-menu').classList.add('hidden');
+    currentLevel = 0;
+    loadLevel(currentLevel);
+    closeMenu();
+  }
+}
+
+function prevTutorial() {
+  if (tutorialIndex > 0) {
+    tutorialIndex--;
+    syncTutorialUI();
+  }
+}
+
+function syncTutorialUI() {
+  // 切換可見的 step
+  document.querySelectorAll('.t-step').forEach((s, i) => {
+    s.classList.toggle('active', i === tutorialIndex);
+  });
+
+  // dots（若不存在就建立；數量不對就重建一次）
+  const dots = document.getElementById('tutorial-dots');
+  if (dots) {
+    if (dots.childElementCount !== TUTORIAL_STEPS) {
+      dots.innerHTML = '';
+      for (let i = 0; i < TUTORIAL_STEPS; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        dots.appendChild(d);
+      }
+    }
+    dots.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === tutorialIndex);
+    });
+  }
+
+  // 按鈕文案 / 狀態
+  const prevBtn = document.getElementById('btn-prev');
+  const nextBtn = document.getElementById('btn-next');
+
+  if (prevBtn) {
+    // ✅ 第一頁：直接隱藏，而不是 disabled（disabled 仍會佔位）
+    const isFirst = tutorialIndex === 0;
+    prevBtn.style.display = isFirst ? 'none' : '';
+    prevBtn.setAttribute('aria-hidden', isFirst ? 'true' : 'false');
+    //（可選）保險地同步 disabled 狀態
+    prevBtn.disabled = isFirst;
+  }
+
+  if (nextBtn) {
+    nextBtn.textContent = (tutorialIndex === TUTORIAL_STEPS - 1) ? '開始 Lv1' : '下一頁';
+  }
+}
+
+// 綁定按鈕（你原本的 btn-tutorial 改成叫 openTutorial）
+document.addEventListener('DOMContentLoaded', () => {
+  const btnTutorial = document.getElementById('btn-tutorial');
+  if (btnTutorial) btnTutorial.addEventListener('click', openTutorial);
+
+  document.getElementById('tutorial-close').addEventListener('click', closeTutorial);
+  document.getElementById('btn-prev').addEventListener('click', prevTutorial);
+  document.getElementById('btn-next').addEventListener('click', nextTutorial);
+});
+
+
+
+
+// home 鍵控制回主畫面
+document.addEventListener('DOMContentLoaded', () => {
+  const menu = document.getElementById('main-menu');
+  const btnMainMenu = document.getElementById('btn-main-menu');
+
+  // 回主畫面按鈕
+  btnMainMenu.addEventListener('click', () => {
+    // 暫停計時（如果有）
+    if (typeof stopTimer === 'function') stopTimer();
+
+    // 顯示主畫面
+    openMenu();
+  });
+});
+
+function openMenu() {
+  document.getElementById('main-menu').classList.remove('hidden');
+
+  // 可選：阻擋底層遊戲操作（避免誤點）
+  const panel = document.querySelector('.panel');
+  if (panel) panel.style.pointerEvents = 'none';
+}
+
+function closeMenu() {
+  document.getElementById('main-menu').classList.add('hidden');
+
+  // 恢復底層遊戲操作
+  const panel = document.querySelector('.panel');
+  if (panel) panel.style.pointerEvents = 'auto';
 }

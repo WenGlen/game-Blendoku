@@ -1,69 +1,78 @@
 @charset "UTF-8";
-/* http://meyerweb.com/eric/tools/css/reset/ 
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-* {
-  /* HTML5 display-role reset for older browsers */
-}
-* html, * body, * div, * span, * applet, * object, * iframe,
-* h1, * h2, * h3, * h4, * h5, * h6, * p, * blockquote, * pre,
-* a, * abbr, * acronym, * address, * big, * cite, * code,
-* del, * dfn, * em, * img, * ins, * kbd, * q, * s, * samp,
-* small, * strike, * strong, * sub, * sup, * tt, * var,
-* b, * u, * i, * center,
-* dl, * dt, * dd, * ol, * ul, * li,
-* fieldset, * form, * label, * legend,
-* table, * caption, * tbody, * tfoot, * thead, * tr, * th, * td,
-* article, * aside, * canvas, * details, * embed,
-* figure, * figcaption, * footer, * header, * hgroup,
-* menu, * nav, * output, * ruby, * section, * summary,
-* time, * mark, * audio, * video {
+/* ================ reset ================ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 100%;
   font: inherit;
+  font-size: 100%;
   vertical-align: baseline;
 }
-* article, * aside, * details, * figcaption, * figure,
-* footer, * header, * hgroup, * menu, * nav, * section {
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
   display: block;
 }
-* body {
+
+body {
   line-height: 1;
 }
-* ol, * ul {
-  padding-left: 32px;
+
+ol, ul {
   margin: 0;
+  padding-left: 32px;
 }
-* blockquote, * q {
+
+blockquote, q {
   quotes: none;
 }
-* blockquote:before, * blockquote:after,
-* q:before, * q:after {
+
+blockquote:before, blockquote:after,
+q:before, q:after {
   content: "";
-  content: none;
 }
-* table {
+
+table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
+/* ================ tokens ================ */
 :root {
-  /* ================ color ================ */
-  --color-primary: #007BA7;
-  --color-primary-light: #AFEEEE;
-  --color-primary-bright: #00CED1;
-  --color-primary-dark: #2F4F4F;
-  --color-primary2: #004D99;
-  --color-primary2-light: #87CEFA;
-  --color-primary2-bright: #007FFF;
-  --color-primary2-dark: #003153;
-  --color-secondary: #FFBF00;
-  --color-secondary-light: #FFEF00;
-  --color-secondary-dark: #704214;
-  --color-gary: #5f7791;
+  /* frame */
+  --radius: 8px;
+  --button-size: 32px;
+  --button-radius: 8px;
+  --button-font-size: 8px;
+  --grid-size: 60px;
+  --grid-radius: 8px;
+  /* text */
+  --font-size-h1: 10vh;
+  --font-size-h2: 20px;
+  --font-size-h3: 14px;
+  --font-size-body: 12px;
+  --font-size-small: 12px;
+  /* color */
+  --color-primary: #0a88a3;
+  --color-primary2: #004d99;
+  --color-primary-light: #39abbd;
+  --color-secondary: #ffbf00;
+  --color-secondary2: #ffd300;
+  --color-warning: #ff80bf;
+  --color-temp: #666;
+  --color-gray: #5f7791;
   --color-gray90: #202830;
   --color-gray80: #303c49;
   --color-gray70: #3f4f61;
@@ -76,28 +85,9 @@
   --color-gray05: #e4e8ed;
   --color-bg-dark: var(--color-gray90);
   --color-container-dark: var(--color-gray70);
-  --color-bg-light: #F5F5DC;
+  --color-bg-light: #f5f5dc;
   --color-container-light: #264c58;
-  --color-text: #004D99;
-  --color-link: #00CED1;
-  --color-border: #5E86C1;
-  --color-warning: #FF80BF;
-  --color-warning-light: #FF007F;
-  --color-warning-dark: #C41E3A;
-  --color-temp: #666666;
-  /* ================ frame ================ */
-  --radius: 8px;
-  --button-size: 32px;
-  --button-radius: 8px;
-  --button-font-size: 8px;
-  --grid-size:60px;
-  --grid-radius:8px;
-  /* ================ text ================ */
-  --font-size-h1: 36px;
-  --font-size-h2: 20px;
-  --font-size-h3: 14px;
-  --font-size-body: 12px;
-  --font-size-small: 12px;
+  --color-border: #5e86c1;
 }
 
 * {
@@ -112,28 +102,41 @@ html, body {
 }
 
 .wrap {
-  max-width: 50vh;
-  height: 100vh;
-  margin: 0 auto;
-  padding: 2vh;
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
+  max-width: 50vh;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 2vh;
+}
+
+button {
+  margin: 0 1vh;
+  padding: 1vh 3vh;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--color-gray10);
+  cursor: pointer;
+  font-size: 2vh;
+  color: var(--color-gray90);
+}
+
+.hidden {
+  display: none !important;
 }
 
 .header {
-  box-sizing: border-box;
-  width: 100%;
-  height: 8vh;
-  margin: 0 auto;
-  margin-bottom: 2vh;
-  background: var(--color-container-dark);
-  border-radius: var(--radius);
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
+  width: 100%;
+  height: 8vh;
+  margin: 0 auto 2vh;
+  background: var(--color-container-dark);
+  border-radius: var(--radius);
 }
 .header .logo {
   width: 4vh;
@@ -145,45 +148,56 @@ html, body {
   height: auto;
 }
 .header .levelNum {
+  font-family: monospace;
   font-size: 4vh;
   font-weight: bold;
   line-height: 1.5;
-  color: var(--color-gray20);
   text-align: center;
-  font-family: monospace;
+  color: var(--color-gray20);
 }
-.header .ver {
-  color: var(--color-gray40);
+
+.icon-btn2 {
+  background: transparent;
   width: 4vh;
   height: 4vh;
+  padding: 0;
   margin: 2vh;
-  display: flex;
-  text-align: center;
-  align-items: center;
+}
+.icon-btn2 img {
+  width: 100%;
+  height: auto;
+}
+
+.homeIcon {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.homeIcon:hover {
+  opacity: 0.7;
 }
 
 .panel {
-  box-sizing: border-box;
-  width: 100%;
-  flex-grow: 1;
-  margin: 0 auto;
-  padding: 4vh;
   position: relative;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4vh;
   background: var(--color-container-dark);
   border-radius: var(--radius);
 }
 
 /* ================ panel UI ================ */
-.board {
-  display: grid;
-  justify-content: center;
-  margin: 0 auto;
-}
-
 .grid-board {
   display: grid;
+  justify-content: center;
+}
+
+.start-board {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .fixed-tile {
@@ -191,36 +205,27 @@ html, body {
 }
 
 .cell {
-  box-sizing: border-box;
   position: relative;
-  width: var(--grid-size);
-  height: var(--grid-size);
-  border-radius: var(--grid-radius);
-  border: 1px solid var(--color-gray70);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: var(--grid-size);
+  height: var(--grid-size);
+  border: 1px solid var(--color-gray70);
+  border-radius: var(--grid-radius);
   background: var(--color-gray90);
 }
 .cell.fixed::after {
-  content: "🔒";
   position: absolute;
   top: 4px;
   right: 4px;
   font-size: 14px;
   opacity: 0.7;
+  content: "🔒";
 }
-
-.hidden-cell {
+.cell.hidden-cell {
   background-color: var(--color-container-dark);
   pointer-events: none; /* 無法拖曳進入 */
-}
-
-.start-area {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 0 auto;
 }
 
 .tile {
@@ -228,10 +233,6 @@ html, body {
   height: var(--grid-size);
   border-radius: var(--grid-radius);
   cursor: grab;
-}
-.tile.selected {
-  outline: 3px solid #007bff;
-  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
 }
 
 .gap-line {
@@ -241,35 +242,111 @@ html, body {
 }
 
 .gap-space {
-  width: 100%;
   flex-grow: 1;
+  width: 100%;
 }
 
 .info-bar {
+  display: flex;
+  justify-content: space-between;
   margin-top: 2vh;
   margin-bottom: -1vh;
   padding: 1vh;
-  display: flex;
-  justify-content: center;
-  justify-content: space-between;
   border-radius: var(--radius);
   background: var(--color-gray80);
   font-size: 1.5vh;
   color: var(--color-gray20);
 }
 
-#step-count {
+.counter {
   display: inline-block;
-  width: 30px; /* 依據你預期的最大時間調整 */
-  text-align: right; /* 數字靠右對齊，避免跳動 */
+  width: var(--counter-w, auto);
+  text-align: right;
   font-family: monospace;
 }
 
+#step-count {
+  --counter-w: 30px;
+}
+
 #timer {
-  display: inline-block;
-  width: 60px; /* 依據你預期的最大時間調整 */
-  text-align: right; /* 數字靠右對齊，避免跳動 */
-  font-family: monospace;
+  --counter-w: 60px;
+}
+
+/* ================ Start Screen ================ */
+#main-menu {
+  position: absolute;
+  inset: 2vh; /* 比 top/left/width/height 更簡潔 */
+  box-sizing: border-box;
+  z-index: 200; /* 提高層級，穩穩蓋住一切 */
+  width: 100%;
+  flex-grow: 1;
+  margin: 0 auto;
+  padding: 4vh;
+  background: var(--color-container-dark);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2vh;
+}
+#main-menu h1 {
+  color: var(--color-gray10);
+  font-size: var(--font-size-h1);
+}
+
+/* 主動作列：兩顆大按鈕 */
+.menu-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0 20px;
+}
+
+/* 關卡 3x3 網格 */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* 通用按鈕 */
+.btn {
+  color: var(--color-gray90);
+  background: var(--color-gray10);
+}
+.btn.primary {
+  background: var(--color-primary);
+  color: var(--color-gray10);
+  font-weight: bold;
+}
+.btn.primary:hover {
+  background: var(--color-primary-light);
+}
+.btn.ghost {
+  background: transparent;
+  border-color: var(--color-gray30);
+  color: var(--color-gray20);
+}
+
+/* 關卡按鈕 */
+.level-btn {
+  padding: 2vh;
+  border-radius: var(--button-radius);
+  background: var(--color-gray60);
+  color: var(--color-gray20);
+  font-weight: bold;
+}
+
+.level-btn:hover {
+  background: var(--color-gray50);
+}
+
+.level-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ================ popup ================ */
@@ -283,10 +360,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-}
-.popup.hidden {
-  display: none;
+  z-index: 100;
 }
 
 .popup-content {
@@ -299,6 +373,7 @@ html, body {
 .popup-content h3 {
   color: var(--color-gray10);
   font-size: 3vh;
+  line-height: 1.5;
 }
 .popup-content.pass-record {
   height: 2vh;
@@ -307,15 +382,6 @@ html, body {
   align-items: center;
   color: var(--color-gray30);
   font-size: 1.5vh;
-}
-.popup-content button {
-  padding: 1vh 3vh;
-  margin: 0 1vh;
-  border: 0px solid transparent;
-  border-radius: var(--radius);
-  background: var(--color-gray10);
-  font-size: 2vh;
-  color: var(--color-gray90);
 }
 
 .footer {
@@ -335,4 +401,684 @@ html, body {
   font-size: 12px;
   color: var(--color-gray40);
   text-align: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.tutorial-card {
+  position: absolute;
+  inset: 2vh; /* 比 top/left/width/height 更簡潔 */
+  box-sizing: border-box;
+  z-index: 300; /* 提高層級，穩穩蓋住一切 */
+  width: 100%;
+  flex-grow: 1;
+  margin: 0 auto;
+  padding: 25vh 4vh;
+  background: var(--color-container-dark);
+  border-radius: var(--radius);
+  color: var(--color-gray10);
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vh;
+}
+
+.tutorial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2vh;
+}
+
+.tutorial-title {
+  font-size: 2.4vh;
+  font-weight: bold;
+}
+
+.icon-btn {
+  background: transparent;
+  border: 0;
+  color: var(--color-gray30);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tutorial-body {
+  min-height: 28vh;
+}
+
+.t-step {
+  display: none;
+}
+
+.t-step.active {
+  display: block;
+}
+
+.t-step h3 {
+  font-size: 2.2vh;
+  margin-bottom: 0.8vh;
+  color: var(--color-gray10);
+}
+
+.t-step p {
+  font-size: 1.6vh;
+  color: var(--color-gray20);
+  margin-bottom: 1.4vh;
+}
+
+.tutorial-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gray50);
+  opacity: 0.5;
+}
+
+.dots .dot.active {
+  opacity: 1;
+  background: var(--color-secondary);
+}
+
+.demo {
+  border-radius: var(--radius);
+  padding: 1.2vh;
+}
+
+:root {
+  --gap: 8px;
+  --grid-size: 60px;
+  --grid-radius: 8px;
+  --step: calc(var(--grid-size) + var(--gap));
+}
+
+/* 共用小格 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, var(--grid-size));
+  gap: 8px;
+  justify-content: center;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--grid-size);
+  height: var(--grid-size);
+  background: var(--color-gray90);
+  border: 1px solid var(--color-gray70);
+  border-radius: var(--grid-radius);
+}
+
+.cell.empty {
+  background: transparent;
+  border-style: dashed;
+}
+
+.tile {
+  width: var(--grid-size);
+  height: var(--grid-size);
+  border-radius: var(--grid-radius);
+}
+
+.demo-panel {
+  padding: 2vh;
+}
+
+.cursor-hand {
+  position: absolute;
+  transition: none;
+  pointer-events: none;
+}
+
+/* ===== Step 1 教學插圖：2行4格漸層示意  ===== */
+.demo-gradients {
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+.demo-gradients .grid {
+  display: flex;
+  gap: 0vh;
+}
+.demo-gradients .tile.color1 {
+  background: #0c6b00;
+}
+.demo-gradients .tile.color2 {
+  background: #4d8f13;
+}
+.demo-gradients .tile.color3 {
+  background: #86a927;
+}
+.demo-gradients .tile.color4 {
+  background: #ffe14d;
+}
+.demo-gradients .tile.color5 {
+  background: #004d99;
+}
+.demo-gradients .tile.color6 {
+  background: #007ba7;
+}
+.demo-gradients .tile.color7 {
+  background: #76bad3;
+}
+.demo-gradients .tile.color8 {
+  background: #ebf9ff;
+}
+
+/* ===== Step 2：拿起／放下／移動（完整 1→6 流程） ===== */
+/* 全段動畫長度（可調） */
+/* 5s 的 0.5s ≈ 10% */
+/* 時間片段（百分比） */
+/* (2) 抓起中間：tile 上浮 */
+/* (4) 往右移 0.5s */
+/* (5) 右格抓取（fixed，不上浮） */
+/* (6) 往左移回 0.5s */
+.pick-scene {
+  --gap: 8px;
+  --step: calc(var(--grid-size) + var(--gap)); /* 一格的位移距離 */
+  position: relative; /* 游標定位參考 */
+}
+
+/* 讓三顆示意色塊好辨識（可依你主題調整色） */
+.pick-t1 {
+  background: var(--color-gray90);
+}
+
+.pick-t2 {
+  background: #86a927;
+}
+
+.pick-t3 {
+  background: #ffe14d;
+}
+
+/* 中間那顆在抓取期間上浮（只在 grab1 期間作動） */
+.pick-scene .mid .tile {
+  animation: s2-lift 5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes s2-lift {
+  0%, 9.99% {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  10%, 25% {
+    transform: translateY(-12px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  }
+  25.01%, 100% {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+/* 游標基準位置：一開始在「中間格」右下角 */
+.pick-scene .cursor-hand {
+  position: absolute;
+  z-index: 10; /* 永遠浮在 tile 之上 */
+  width: 28px;
+  pointer-events: none;
+  left: calc(var(--grid-size) * 3 + var(--gap) * 2); /* 依你的格數微調 */
+  transition: none !important; /* 禁用任何 transition 避免漸變 */
+}
+
+/* ===== 游標「顯示狀態」：瞬切（opacity steps） ===== */
+/* idle：除了兩段抓取期間外，其餘時段顯示 */
+@keyframes s2-cursor-idle {
+  0%, 9.99% {
+    opacity: 1;
+  }
+  10%, 25% {
+    opacity: 0;
+  } /* 抓起中間 */
+  25.01%, 64.99% {
+    opacity: 1;
+  }
+  65%, 80% {
+    opacity: 0;
+  } /* 右格抓取（fixed） */
+  80.01%, 100% {
+    opacity: 1;
+  }
+}
+/* grabbing：與 idle 互補 */
+@keyframes s2-cursor-grab {
+  0%, 9.99% {
+    opacity: 0;
+  }
+  10%, 25% {
+    opacity: 1;
+  }
+  25.01%, 64.99% {
+    opacity: 0;
+  }
+  65%, 80% {
+    opacity: 1;
+  }
+  80.01%, 100% {
+    opacity: 0;
+  }
+}
+/* ===== 游標「位置」：中 → 右 → 回中（兩段各 ~0.5s） ===== */
+@keyframes s2-move {
+  /* 起點在中間（translateX(0)） */
+  0%, 39.99% {
+    transform: translateX(0);
+  }
+  48% {
+    transform: translateX(var(--step));
+  } /* 右移一格 */
+  80%, 89.99% {
+    transform: translateX(var(--step));
+  }
+  98% {
+    transform: translateX(0);
+  } /* 移回中間 */
+  100% {
+    transform: translateX(0);
+  }
+}
+/* 套用到兩張游標圖：一張管可視、一張管不可視；位置共用 s2-move */
+.pick-scene .cursor-hand.idle {
+  animation: s2-cursor-idle 5s steps(1, end) infinite, s2-move 5s linear infinite;
+}
+
+.pick-scene .cursor-hand.grabbing {
+  animation: s2-cursor-grab 5s steps(1, end) infinite, s2-move 5s linear infinite;
+}
+
+/* ===== Step 3：交換示意（游標路徑 + A/B 交換） ===== */
+/* ===== Step 3：四格交換（同步 + 抓取狀態 + 瞬切重置）===== */
+/* 節點（如要調速只改這些） */
+/* 起始停住（未抓） */
+/* 抓1開始：A 上浮 */
+/* 移動 1→3 完成 */
+/* 放下到第3格 */
+/* 等 0.5s */
+/* 抓2結束（上浮完成） */
+/* 移動 3→4 完成 */
+/* 停在第4格（抓著） */
+/* 0.5s 後放下：A 落第4、B 瞬到第3 */
+/* 1s 後重置瞬切 */
+.demo-step3 .swap-scene {
+  --gap: 8px;
+  --step: calc(var(--grid-size) + var(--gap));
+  display: grid;
+  grid-template-columns: repeat(4, var(--grid-size));
+  gap: var(--gap);
+  justify-content: center;
+  position: relative;
+}
+
+/* 層級：cursor > A > B */
+.demo-step3 .tile {
+  position: relative;
+  z-index: 1;
+}
+
+.demo-step3 .tile-a {
+  z-index: 3;
+  will-change: transform;
+  background: #0c6b00;
+}
+
+.demo-step3 .tile-b {
+  z-index: 2;
+  background: #ffe14d;
+}
+
+/* 避免舊規則把一張圖 display:none；兩張都顯示，用 opacity 切換 */
+.demo-step3 .cursor-hand {
+  display: block !important;
+}
+
+/* 游標基準（第1格右下） */
+.demo-step3 .cursor-hand {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  width: 28px;
+  left: calc(0 * var(--step) + 1 * var(--grid-size));
+  transition: none !important;
+}
+
+/* ===== 游標顯示狀態（移動全程為 grab）===== */
+@keyframes s3-cursor-idle {
+  /* 未抓顯示，抓/移動隱藏 */
+  0%, 10% {
+    opacity: 1;
+  }
+  10.01%, 40.01% {
+    opacity: 0;
+  } /* 抓1 + 移動1→3 + 放下過程 */
+  40.02%, 50.01% {
+    opacity: 1;
+  } /* 等0.5s */
+  50.02%, 70.1% {
+    opacity: 0;
+  } /* 抓2 + 移動3→4 + 放前停 */
+  70.11%, 100% {
+    opacity: 1;
+  }
+}
+@keyframes s3-cursor-grab {
+  /* 抓與移動期間顯示 */
+  0%, 10% {
+    opacity: 0;
+  }
+  10.01%, 40.01% {
+    opacity: 1;
+  } /* 抓1 + 移動1→3 + 放下交接 */
+  40.02%, 50.01% {
+    opacity: 0;
+  } /* 等0.5s */
+  50.02%, 70.1% {
+    opacity: 1;
+  } /* 抓2 + 移動3→4 + 放前停 */
+  70.11%, 100% {
+    opacity: 0;
+  }
+}
+/* 兩張游標圖：同一條位置動畫 + 線性，同步 */
+.demo-step3 .cursor-hand.idle {
+  animation: s3-cursor-idle 5s steps(1, end) infinite, s3-move 5s linear infinite !important;
+}
+
+.demo-step3 .cursor-hand.grabbing {
+  animation: s3-cursor-grab 5s steps(1, end) infinite, s3-move 5s linear infinite !important;
+}
+
+/* ===== 游標位置（linear，同步）：1→3→4→(99.99%仍4，100%瞬回1) ===== */
+@keyframes s3-move {
+  /* 起點在第1格 */
+  0%, 10% {
+    transform: translateX(0);
+  }
+  /* 抓起後移動到第3格（完成於 P3） */
+  40% {
+    transform: translateX(calc(2 * var(--step)));
+  }
+  /* ✅ 在第3格停住：放下(P4) → 等0.5s(P5S) → 抓起完成(P5E) 都不動 */
+  40.01%, 50.01%, 50.02% {
+    transform: translateX(calc(2 * var(--step)));
+  }
+  /* 再移動到第4格（完成於 P6E） */
+  70% {
+    transform: translateX(calc(3 * var(--step)));
+  }
+  /* 在重置前停在第4格，100% 瞬回到第1格 */
+  99.9899% {
+    transform: translateX(calc(3 * var(--step)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+/* ===== 綠色 A：與游標同節點（linear），抓時上浮，最後瞬切回起點 ===== */
+@keyframes s3-a-path {
+  0%, 10% {
+    transform: translateX(0) translateY(0);
+    box-shadow: none;
+  }
+  /* 抓1上浮 */
+  10.01% {
+    transform: translateX(0) translateY(-12px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  }
+  /* 移動 1→3（linear，同步） */
+  40% {
+    transform: translateX(calc(2 * var(--step))) translateY(-12px);
+  }
+  /* 放下到第3格底並停 */
+  40.01% {
+    transform: translateX(calc(2 * var(--step))) translateY(0);
+    box-shadow: none;
+  }
+  50% {
+    transform: translateX(calc(2 * var(--step))) translateY(0);
+  }
+  /* 抓2上浮（第3格） */
+  50.02% {
+    transform: translateX(calc(2 * var(--step))) translateY(-12px);
+    box-shadow: none;
+  }
+  /* 移動 3→4（linear，同步） */
+  70% {
+    transform: translateX(calc(3 * var(--step))) translateY(-12px);
+    box-shadow: none;
+  }
+  /* 放下到第4格底並維持到重置 */
+  70.1% {
+    transform: translateX(calc(3 * var(--step))) translateY(0);
+    box-shadow: none;
+  }
+  /* 99.99% 仍在第4格，100% 瞬回第1格 */
+  99.9899% {
+    transform: translateX(calc(3 * var(--step))) translateY(0);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+.demo-step3 .tile-a {
+  animation: s3-a-path 5s linear infinite !important;
+}
+
+/* ===== 黃色 B：第7步瞬到第3格，重置瞬回第4格（用 steps 保證瞬切） ===== */
+@keyframes s3-b-swap {
+  0%, 70.09% {
+    transform: translateX(0);
+  } /* 在第4格 */
+  70.1%, 99.9899% {
+    transform: translateX(calc(-1 * var(--step)));
+  } /* 瞬到第3格 */
+  100% {
+    transform: translateX(0);
+  } /* 瞬回第4格 */
+}
+.demo-step3 .tile-b {
+  animation: s3-b-swap 5s steps(1, end) infinite !important;
+}
+
+/* Step 4 過關動畫 + 假彈窗 */
+/* ===== Step 4：一開始手抓著最後一顆 → 移到第二格上方 → 放下 → 出現彈窗 → 重置 ===== */
+/* 🔧 全段總長 */
+/* 時間節點（百分比，照需求好改） */
+/* (2) 移動到第2格上方 完成 */
+/* (3) 放下（tile-c 掉入第2格，手改 idle） */
+/* (4) 彈窗顯示開始 */
+/* (4) 彈窗顯示結束 */
+/* (5) 重置到初始 */
+.demo-step4 {
+  position: relative; /* 你已經有了，保留 */
+  --gap: 8px; /* 提到這裡 */
+  --step: calc(var(--grid-size) + var(--gap));
+}
+
+/* 四格場景：1、3、4 有色塊，2 空 */
+.demo-step4 .finish-scene {
+  display: grid;
+  grid-template-columns: repeat(4, var(--grid-size));
+  gap: var(--gap);
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* 既有三顆：示意上色（可換成你的調色） */
+.demo-step4 .tile-a {
+  background: #0c6b00;
+} /* 第1格 綠 */
+.demo-step4 .tile-b {
+  background: #86a927;
+}
+
+.demo-step4 .tile-d {
+  background: #ffe14d;
+} /* 第4格 黃 */
+/* 手中這一顆（最後一顆）：跟手移動 */
+.demo-step4 .tile-c.floating {
+  position: absolute;
+  z-index: 3;
+  width: var(--grid-size);
+  height: var(--grid-size);
+  border-radius: var(--grid-radius);
+  background: #86a927;
+  pointer-events: none;
+  /* 基準：第1格右下角，起點再往左一格 */
+  left: calc(1 * var(--step) + 0 * var(--grid-size));
+  top: calc(0.2 * var(--grid-size));
+  /* ✅ 單一動畫同時管 X+Y（不要再分兩個 transform 動畫） */
+  animation: s4-path 4s linear infinite;
+}
+
+/* 這些節點用你前面 Step4 的同名變數 */
+@keyframes s4-path {
+  /* 1) 起始：在第1格左一格，手中（上浮狀態） */
+  0% {
+    transform: translateX(calc(-1 * var(--step))) translateY(-12px);
+  }
+  /* 2) 移到第2格上方（仍上浮） */
+  40% {
+    transform: translateX(calc(1 * var(--step))) translateY(-12px);
+  }
+  /* 3) 放下：掉進第二格（回到 Y=0） */
+  40.01%, 99.99% {
+    transform: translateX(calc(1 * var(--step))) translateY(0);
+  }
+  100% {
+    transform: translateX(calc(-1 * var(--step))) translateY(-12px);
+  }
+}
+/* 游標基準：同一個參考點（第1格右下角，起點往左 1 格） */
+.demo-step4 .cursor-hand {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  width: 28px;
+  left: calc(1 * var(--step) + 0 * var(--grid-size));
+  top: calc(0.2 * var(--grid-size));
+  transition: none !important;
+  display: block !important; /* 防止舊規則用 display:none */
+}
+.demo-step4 .cursor-hand.idle {
+  animation: s4-cursor-idle 4s steps(1, end) infinite, s4-move 4s linear infinite !important;
+}
+.demo-step4 .cursor-hand.grabbing {
+  animation: s4-cursor-grab 4s steps(1, end) infinite, s4-move 4s linear infinite !important;
+}
+
+/* idle / grabbing：用 opacity 切換（放下瞬間顯示 idle） */
+@keyframes s4-cursor-idle {
+  /* (1) 起始抓著 → idle=0；(3) 放下時刻 → idle=1；其餘 0 */
+  0% {
+    opacity: 0;
+  }
+  40.01%, 99.99% {
+    opacity: 1;
+  }
+  100%, 100% {
+    opacity: 0;
+  }
+}
+@keyframes s4-cursor-grab {
+  /* 抓取：除放下瞬間外都為 1 */
+  0% {
+    opacity: 1;
+  }
+  40.01%, 99.99% {
+    opacity: 0;
+  }
+  100%, 100% {
+    opacity: 1;
+  }
+}
+/* ===== X 位置：起點在「第1格的左一格」，終點到「第2格上方」 ===== */
+@keyframes s4-move {
+  /* 起點：在第1格左一格（-1 * step） */
+  0% {
+    transform: translateX(calc(-1 * var(--step)));
+  }
+  /* (2) 抵達第2格上方（+1 * step） */
+  40%, 99.99% {
+    transform: translateX(calc(1 * var(--step)));
+  }
+  /* (5) 重置瞬間回起點（避免看到回程） */
+  100% {
+    transform: translateX(calc(-1 * var(--step)));
+  }
+}
+/* ===== 浮動/落下：手中那顆在空中 → 放下回到格底（視覺） ===== */
+@keyframes s4-float {
+  /* 起始～到達：保持浮起（-12px） */
+  0%, 39.99% {
+    transform: translateY(-12px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  }
+  /* (3) 放下：回到格底並移除陰影 */
+  40.01% {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  /* 之後維持在格底直到重置（元素同時會被淡出） */
+  40.02%, 100% {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+/* ===== 放下瞬間：讓浮動那顆隱藏（教學視覺完成） ===== */
+@keyframes s4-fade-out {
+  0%, 40% {
+    opacity: 1;
+  }
+  40.01%, 100% {
+    opacity: 0;
+  }
+}
+/* ===== 假彈窗（教學用）：P_POP_S ~ P_POP_E 期間顯示，之後自動隱藏 ===== */
+.tutorial-fake-popup {
+  opacity: 0;
+  pointer-events: none;
+  padding: 4vh;
+  border-radius: var(--radius);
+  width: 95%;
+  background: var(--color-gray70);
+  text-align: center;
+  line-height: 1;
+  color: var(--color-gray10);
+  font-weight: bold;
+  box-shadow: 0 0px 24px rgba(0, 0, 0, 0.35);
+  animation: s4-popup 4s steps(1, end) infinite;
+}
+
+@keyframes s4-popup {
+  0%, 40% {
+    opacity: 0;
+  }
+  40.01%, 99.99% {
+    opacity: 1;
+  }
+  100%, 100% {
+    opacity: 0;
+  }
 }/*# sourceMappingURL=Blendokubase.css.map */
