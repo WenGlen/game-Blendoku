@@ -621,6 +621,9 @@ h1 {
 
 /* ===== Step 2 動畫 ===== */
 .pick-scene {
+  --cols: 3;
+  --gridW: calc(var(--cols) * var(--grid-size) + (var(--cols) - 1) * var(--gap));
+  --grid-left: calc(50% - var(--gridW) / 2); /* 置中後的左緣 */
   position: relative;
 }
 
@@ -656,7 +659,7 @@ h1 {
   }
 }
 .pick-scene .cursor-hand {
-  left: calc(var(--grid-size) * 2 + var(--gap) * 1.5);
+  left: calc(var(--grid-left) + 1 * var(--grid-size) + 2 * var(--gap));
 }
 
 @keyframes s2-cursor-idle {
@@ -716,6 +719,12 @@ h1 {
 }
 
 /* ===== Step 3 交換動畫 ===== */
+.demo-step3 {
+  --cols: 4;
+  --gridW: calc(var(--cols) * var(--grid-size) + (var(--cols) - 1) * var(--gap));
+  --grid-left: calc(50% - var(--gridW) / 2);
+}
+
 .demo-step3 .swap-scene {
   display: grid;
   grid-template-columns: repeat(4, var(--grid-size));
@@ -741,7 +750,8 @@ h1 {
 }
 
 .demo-step3 .cursor-hand {
-  left: calc(0 * var(--step) + 0.3 * var(--grid-size));
+  left: calc(var(--grid-left) + 0.5 * var(--grid-size));
+  display: block !important;
 }
 
 @keyframes s3-cursor-idle {
@@ -968,7 +978,6 @@ h1 {
 .tutorial-fake-popup {
   opacity: 0;
   pointer-events: none;
-  width: 95%;
   padding: 4vh;
   border-radius: var(--radius);
   background: var(--color-gray70);

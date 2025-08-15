@@ -364,7 +364,12 @@ $moveR_start: 40%;  $moveR_end: 48%;
 $grab2_start: 65%;  $grab2_end: 80%;
 $moveL_start: 90%;  $moveL_end: 98%;
 
-.pick-scene { position: relative; }
+.pick-scene { 
+  --cols: 3;
+  --gridW: calc(var(--cols) * var(--grid-size) + (var(--cols) - 1) * var(--gap));
+  --grid-left: calc(50% - var(--gridW) / 2); /* 置中後的左緣 */
+  position: relative; 
+}
 
 .pick-t1 { background: var(--color-gray90); }
 .pick-t2 { background: #86a927; }
@@ -381,7 +386,8 @@ $moveL_start: 90%;  $moveL_end: 98%;
 }
 
 .pick-scene .cursor-hand {
-  left: calc(var(--grid-size) * 2 + var(--gap) * 1.5);
+  left: calc(var(--grid-left) + 1 * var(--grid-size) + 2 * var(--gap));
+  
 }
 
 @keyframes s2-cursor-idle {
@@ -429,6 +435,12 @@ $P7S: 70%;
 $P7_RELEASE: 70.1%;
 $RESET_AT: 99.9999%;
 
+.demo-step3{
+  --cols: 4;
+  --gridW: calc(var(--cols) * var(--grid-size) + (var(--cols) - 1) * var(--gap));
+  --grid-left: calc(50% - var(--gridW) / 2);
+}
+
 .demo-step3 .swap-scene {
   display: grid;
   grid-template-columns: repeat(4, var(--grid-size));
@@ -441,8 +453,10 @@ $RESET_AT: 99.9999%;
 .demo-step3 .tile-b    { z-index: 2; background:#ffe14d; }
 
 .demo-step3 .cursor-hand {
-  left: calc(0 * var(--step) + 0.3 * var(--grid-size));
+  left: calc(var(--grid-left) + 0.5 * var(--grid-size));
+  display: block !important; 
 }
+
 @keyframes s3-cursor-idle {
   0%, #{$P1}                      { opacity:1; }
   #{$P1 + 0.01%}, #{$P4}          { opacity:0; }
@@ -564,7 +578,7 @@ $P_RESET: 100%;
 
 .tutorial-fake-popup{
   opacity: 0; pointer-events: none;
-  width: 95%; padding: 4vh; border-radius: var(--radius);
+  padding: 4vh; border-radius: var(--radius);
   background: var(--color-gray70); color: var(--color-gray10); font-weight: bold;
   text-align: center; line-height: 1; box-shadow: 0 0 24px rgba(0,0,0,.35);
   animation: s4-popup $S4_DUR steps(1,end) infinite;
