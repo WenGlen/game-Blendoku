@@ -179,16 +179,27 @@
 
       <!-- 記分區 -->
       <div class="info-bar">
-        <span>步數：<span id="step-count" class="counter">0</span></span>
-        <span>時間：<span id="timer" class="counter">0.0</span> 秒</span>
+        <div class="switch-bar">
+          <button id="btn-prev-level" class="icon-btn3" ><img src="img/previous.png" alt=""></button>
+          <button id="btn-retry-level" class="icon-btn3" onclick="restartGame()" ><img src="img/reload.png" alt=""></button>
+          <button id="btn-next-level" class="icon-btn3" ><img src="img/next.png" alt=""></button>
+        </div>
+        <div class="count-bar">
+          <span>步數：<span id="step-count" class="counter">0</span> 步</span>
+          <span>時間：<span id="timer" class="counter">0.0</span> 秒</span>
+        </div>
       </div>
 
       <!-- 彈窗 --> 
       <div id="win-popup" class="popup hidden">
+
         <div class="popup-content">
+          <div class="popup-header">
+            <button class="icon-btn" id="popup-close" aria-label="關閉彈窗">✕</button>
+          </div>
           <h3>🎉　　過關！　　🎉</h3>
           <div class="popup-content pass-record">
-            <p>步數：<span id="popup-step">0</span></p>
+            <p>移動：<span id="popup-step">0</span></p>
             <p>時間：<span id="popup-time">0.0</span> 秒</p>
           </div>
           <div>
@@ -196,12 +207,13 @@
             <button onclick="nextLevel()">下一關</button>
           </div>
         </div>
+
       </div>
       
     </div>
 
     <footer class="footer">
-      <p>製作者: Glen  版本: v10.2</p>
+      <p>製作者: Glen　　版本: v11.1</p>
       <p>玩法機制參考: Blendoku2</p>
     </footer>
   </div>

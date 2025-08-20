@@ -5,6 +5,7 @@ let timerInterval = null;
 let hasStarted = false;
 let timeElapsed = 0;
 let currentLevel = 0;
+let boardLocked = false; // 是否鎖盤（通關後為 true）
 
 // ====== 設定主畫面 / 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,7 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
   btnStart?.addEventListener('click', () => {
     menu.classList.add('hidden');
     currentLevel = 0;
+    closeMenu();
     loadLevel(currentLevel); // Lv1
+    syncLevelNav();   // ✅
   });
 
   // 主畫面：關卡選擇（統一用 menu 委派處理 data-level）
@@ -31,7 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Number.isNaN(i) || i < 0 || i >= gameLevels.length) return; // 安全檢查
     currentLevel = i;
     menu.classList.add('hidden');
+
+    closeMenu();
     loadLevel(currentLevel);
+    syncLevelNav();             // ✅ ③ 立刻同步按鈕狀態
   });
 
   // 玩法教學（暫時佔位）
@@ -78,8 +84,10 @@ function loadLevel(index) {
   document.getElementById('step-count').textContent = '0';
   document.getElementById('timer').textContent = '0.0';
   document.getElementById('win-popup').classList.add('hidden');
-
+  
   startGame(levelData);
+  unlockBoard();
+  syncLevelNav();
 }
 
 // ====== 主流程函式 ======
@@ -93,7 +101,7 @@ function startGame({ rows, cols, fixedIndices, colorOrder }) {
 function generateBoard({ rows, cols, fixedIndices, colorOrder }) {
   const board = document.getElementById('board');
   board.innerHTML = '';
-  board.style.gridTemplateColumns = `repeat(${cols}, 60px)`; // 60px 可改為 CSS 變數
+  board.style.gridTemplateColumns = `repeat(${cols}, 55px)`; // 60px 可改為 CSS 變數
 
   for (let i = 0; i < rows * cols; i++) {
     const cell = document.createElement('div');
@@ -115,7 +123,7 @@ function generateBoard({ rows, cols, fixedIndices, colorOrder }) {
     }
 
     board.appendChild(cell);
-    closeMenu()
+    //closeMenu()
   }
 }
 
@@ -194,11 +202,13 @@ function setupDragAndDrop() {
   // 拖曳事件（桌機）
   tiles.forEach(tile => {
     tile.addEventListener('dragstart', (e) => {
+      if (boardLocked) return; 
       e.dataTransfer.setData('text/plain', tile.dataset.index);
     });
 
     // 點擊事件（手機/桌機）
-    tile.addEventListener('click', () => {
+    tile.addEventListener('click', () => { 
+      if (boardLocked) return; 
       if (selectedTile === tile) {
         tile.classList.remove('selected');
         selectedTile = null;
@@ -212,9 +222,13 @@ function setupDragAndDrop() {
 
   // 放置格子邏輯
   cells.forEach(cell => {
-    cell.addEventListener('dragover', (e) => e.preventDefault());
-
+    cell.addEventListener('dragover', (e) => {
+      if (boardLocked) return; 
+      e.preventDefault();
+    });
+    
     cell.addEventListener('drop', (e) => {
+      if (boardLocked) return; 
       e.preventDefault();
       if (cell.dataset.fixed === 'true') return;
       if (cell.dataset.disabled === 'true') return;
@@ -225,6 +239,7 @@ function setupDragAndDrop() {
 
     // 點格子 → 把選到的 tile 放進來
     cell.addEventListener('click', () => {
+      if (boardLocked) return; 
       if (!selectedTile) return;
       moveTileToCell(selectedTile, cell);
       selectedTile.classList.remove('selected');
@@ -289,6 +304,7 @@ function checkAnswer() {
   });
 
   if (correct) {
+    lockBoard();
     showPopup(); // 顯示彈窗
     stopTimer?.(); // 如果有定時器函式
   }
@@ -515,6 +531,84 @@ function closeMenu() {
 }
 
 
+// ===== 切關功能 =====
+// 綁定按鈕
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-prev-level') .addEventListener('click', prevLevel);
+  document.getElementById('btn-next-level') .addEventListener('click', nextLevel);
+
+  // 進遊戲第一次也同步一次
+  syncLevelNav();
+});
+
+// 上一關
+function prevLevel() {
+  if (currentLevel <= 0) return;
+  currentLevel--;
+  loadLevel(currentLevel);
+  syncLevelNav();
+}
+
+// 下一關（最後一關 → 回主選單）
+function nextLevel() {
+  if (currentLevel >= gameLevels.length - 1) {
+    openMenu();                 // 回主畫面
+    return;
+  }
+  currentLevel++;
+  loadLevel(currentLevel);
+  syncLevelNav();
+}
+
+// 重玩同一關（重置時間/步數 & 重新載入）
+function restartCurrentLevel() {
+  resetStats();                 // 你原本的歸零：步數、計時器
+  loadLevel(currentLevel);
+  syncLevelNav();
+}
+
+// 依目前關卡啟用/停用左右鍵
+function syncLevelNav() {
+  const prevBtn = document.getElementById('btn-prev-level');
+  const nextBtn = document.getElementById('btn-next-level');
+
+  if (!prevBtn || !nextBtn) return;
+
+  prevBtn.disabled = (currentLevel <= 0);
+  nextBtn.disabled = (currentLevel >= gameLevels.length - 1);
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const popup = document.getElementById("win-popup");
+  const closeBtn = document.getElementById("popup-close");
+
+  closeBtn.addEventListener("click", () => {
+    document.getElementById('win-popup').classList.add('hidden');
+  });
+});
+
+
+
+
+function lockBoard() {
+  boardLocked = true;
+  document.querySelectorAll('.tile').forEach(t => {
+    t.setAttribute('draggable', 'false');
+    t.classList.add('locked');
+  });
+}
+
+function unlockBoard() {
+  boardLocked = false;
+  document.querySelectorAll('.tile').forEach(t => {
+    // 固定提示格維持不可拖曳
+    if (!t.classList.contains('fixed-tile')) {
+      t.setAttribute('draggable', 'true');
+    }
+    t.classList.remove('locked');
+  });
+}
 
 // ===== RWD =====
 
@@ -546,3 +640,4 @@ function fitCanvas(canvas, w = BASE_W, h = BASE_H){
   const ctx = canvas.getContext('2d');
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // 座標仍用 CSS px
 }
+
