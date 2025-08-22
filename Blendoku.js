@@ -7,6 +7,10 @@ let timeElapsed = 0;
 let currentLevel = 0;
 let boardLocked = false; // 是否鎖盤（通關後為 true）
 
+// 你的 GAS 網址 + 金鑰
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxPYdtJ6aohQobYXpcDO2KLQxZ0a4hsS4dsU-3GpE_4BGHCXZOkhD4fAnchOzsT_LrNzA/exec?key=PUT_A_RANDOM_TOKEN_HERE'
+
+
 // ====== 設定主畫面 / 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
   const menu = document.getElementById('main-menu');
@@ -305,6 +309,14 @@ function checkAnswer() {
 
   if (correct) {
     lockBoard();
+
+    // ✅ 上傳成績
+    uploadScore({
+      level: currentLevel + 1,  // 1-based
+      steps: stepCount,
+      timeSec: timeElapsed      // 你已有的全域秒數（或用 (Date.now()-startTime)/1000）
+    });
+
     showPopup(); // 顯示彈窗
     stopTimer?.(); // 如果有定時器函式
   }
@@ -317,6 +329,10 @@ function showPopup() {
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   document.getElementById('popup-time').textContent = elapsed;
 
+
+
+
+  
   const nextBtn = document.querySelector('#win-popup button[onclick="nextLevel()"]');
   if (currentLevel >= gameLevels.length - 1) {
     nextBtn.textContent = '回主選單';
@@ -641,3 +657,42 @@ function fitCanvas(canvas, w = BASE_W, h = BASE_H){
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // 座標仍用 CSS px
 }
 
+
+
+
+
+// ====== 成績上傳 ====== //
+
+// 準備一個 user_id（你若已有登入系統，直接用登入的 ID）
+function getUserId() {
+  // 這裡示範用 localStorage 保存一個隨機 ID（之後都固定）
+  let id = localStorage.getItem('blendokuUserId');
+  if (!id) {
+    id = (crypto.randomUUID && crypto.randomUUID()) || Math.random().toString(36).slice(2);
+    localStorage.setItem('blendokuUserId', id);
+  }
+  return id;
+}
+
+// 上傳成績（只上傳 level、steps、time_sec、user_id）
+async function uploadScore({ level, steps, timeSec }) {
+  try {
+    const payload = {
+      level,                 // 建議 1-based：currentLevel + 1
+      steps,                 // 整數
+      time_sec: Number(timeSec.toFixed(1)), // 小數 1 位
+      user_id: getUserId()
+    };
+
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' }, // 避免 preflight，最穩
+      body: JSON.stringify(payload),
+    });
+    // 可選：檢查回應
+    // const resJson = await (await fetch(...)).json();
+  } catch (err) {
+    console.warn('uploadScore failed:', err);
+    // 可選：失敗時暫存 payload，之後再補送
+  }
+}
